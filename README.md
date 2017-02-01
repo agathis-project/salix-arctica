@@ -225,6 +225,7 @@ microcontroller.
 	SPI0  = SPIA on trunk J1 connector
 	EMAC1 = MII1 (Ethernet Port 1) J5 RJ45 rear connector
     USB0  = USB-OTG on external J6 connector
+	_     = unavailable device 
 		
 
 #### Branch Control and Data Interfaces
