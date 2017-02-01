@@ -17,7 +17,7 @@ Gateway. It is the central processing unit of the gateway build around a Linux
 running microprocessor.  The root is build to support robust stacked systems 
 sharing a vertical interconnect trunk with the branch modules. The tree system
 is powered by an integrated stacked module. The root integrates a tree port 
-ethernet switch whereas the branch modules are custom designed to interface 
+Ethernet switch whereas the branch modules are custom designed to interface 
 with any communication medium. 
 
 
@@ -157,28 +157,26 @@ microcontroller.
 
     Signals translation table:
 
-    uP Config Pin   uP Pin Name  Trunk Signal   uC Port
-    ==============  ===========  =============  =======
-    SYSBOOT.15	    LCD_DATA     QC.1           PK7
-    SYSBOOT.14      LCD_DATA     QC.0           PK6
-    SYSBOOT.13      LCD_DATA     QB.1           PK5
-    SYSBOOT.12      LCD_DATA     QB.0           PK4
-    SYSBOOT.7       LCD_DATA     GPIO.11        PD5
-    SYSBOOT.6       LCD_DATA     GPIO.10        PB3
-    SYSBOOT.5       LCD_DATA     GPIO.9         PB7
-    SYSBOOT.4       LCD_DATA     GPIO.8         PQ3
-    SYSBOOT.3       LCD_DATA     GPIO.3         PD4
-    SYSBOOT.2       LCD_DATA     GPIO.2         PB6
-    SYSBOOT.1       LCD_DATA     GPIO.1         PB4
-    SYSBOOT.0       LCD_DATA     GPIO.0         PC7
+    uP Config Pin   uP Pin Name   Trunk Signal   uC Port
+    =============   ===========   ============   =======
+    SYSBOOT.15	    LCD_DATA15    QC.1           PK7
+    SYSBOOT.14      LCD_DATA14    QC.0           PK6
+    SYSBOOT.13      LCD_DATA13    QB.1           PK5
+    SYSBOOT.12      LCD_DATA12    QB.0           PK4
+    SYSBOOT.7       LCD_DATA7     GPIO.11        PD5
+    SYSBOOT.6       LCD_DATA6     GPIO.10        PB3
+    SYSBOOT.5       LCD_DATA5     GPIO.9         PB7
+    SYSBOOT.4       LCD_DATA4     GPIO.8         PQ3
+    SYSBOOT.3       LCD_DATA3     GPIO.3         PD4
+    SYSBOOT.2       LCD_DATA2     GPIO.2         PB6
+    SYSBOOT.1       LCD_DATA1     GPIO.1         PB4
+    SYSBOOT.0       LCD_DATA0     GPIO.0         PC7
 
 - SYSBOOT signals are latched on rising edge of PWRONRSTn signal:
-
-- disable any driver connected to SYSBOOT signal for at least 10us before and 
-10us after rising edge of PWRONRSTn.
-
-- microcontroller drives the appropriate SYSBOOT configuration before driving
-the rising edge of PWRONRSTn and releases the lines immediatelly after.
+  - disable any driver connected to SYSBOOT signal for at least 10us before and 
+    10us after rising edge of PWRONRSTn.
+  - microcontroller drives the appropriate SYSBOOT configuration before driving
+    the rising edge of PWRONRSTn and releases the lines immediately after.
 
 **SYSBOOT signals boot configuration**
 
@@ -187,46 +185,46 @@ the rising edge of PWRONRSTn and releases the lines immediatelly after.
     SYSBOOT.11,10,9,8   don't care      XXXX    (not controlled by uC)
     SYSBOOT.7,6         fixed:          00    == select MII for EMAC1
     SYSBOOT.5	        fixed:			0     == CLK1 OUT disabled
-    SYSBOOT.4,3,2,1,0 	configurable:   
-		
-		00001 == UART0,_,MMC0,SPI0
-    	00010 == UART0,SPI0,_,_
-    	00011 == UART0,_,_,MMC0
-    	00100 == UART0,_,MMC0,_,_
-    	00101 == UART0,_,SPI0,_
-    	00110 == EMAC1,SPI0,_,_
-    	00111 == EMAC1,MMC0,_,_
-    	01000 == EMAC1,MMC0,_,_
-    	01001 == EMAC1,_,_,MMC0
-    	01010 == EMAC1,_,_SPI0
-    	01011 == USB0,_,SPI0,MMC0
-    	01100 == USB0,_,_,_
-    	01101 == USB0,_,_,SPI0
-    	01110 == RESERVED
-    	01111 == UART0,EMAC1,_,_
-    	10000 == _,UART0,EMAC1,MMC0
-    	10001 == _,UART0,EMAC1,MMC0
-    	10010 == _,_,USB0,UART0
-    	10011 == _,_,MMC0,UART0
-    	10100 == _,_,SPI0,EMAC1
-    	10101 == _,MMC0,EMAC1,UART0
-    	10110 == SPI0,MMC0,UART0,EMAC1
-    	10111 == MMC0,SPI0,UART0,USB0
-    	11000 == SPI0,MMC0,USB0,UART0
-    	11001 == SPI0,MMC0,EMAC1,UART0
-    	11010 == _,UART0,SPI0,MMC0
-    	11011 == _,UART0,SPI0,MMC0
-    	11100 == MMC1,MMC0,UART0,USB0
-    	11101 == RESERVED
-    	11110 == RESERVED
-    	11111 == _,EMAC1,UART0,_
+	SYSBOOT.4,3,2,1,0 	configurable:   00001 == UART0,_,MMC0,SPI0
+    	                                00010 == UART0,SPI0,_,_
+    	                                00011 == UART0,_,_,MMC0
+    	                                00100 == UART0,_,MMC0,_,_
+    	                                00101 == UART0,_,SPI0,_
+    	                                00110 == EMAC1,SPI0,_,_
+    	                                00111 == EMAC1,MMC0,_,_
+    	                                01000 == EMAC1,MMC0,_,_
+    	                                01001 == EMAC1,_,_,MMC0
+    	                                01010 == EMAC1,_,_SPI0
+    	                                01011 == USB0,_,SPI0,MMC0
+    	                                01100 == USB0,_,_,_
+    	                                01101 == USB0,_,_,SPI0
+    	                                01110 == RESERVED
+    	                                01111 == UART0,EMAC1,_,_
+    	                                10000 == _,UART0,EMAC1,MMC0
+    	                                10001 == _,UART0,EMAC1,MMC0
+    	                                10010 == _,_,USB0,UART0
+    	                                10011 == _,_,MMC0,UART0
+    	                                10100 == _,_,SPI0,EMAC1
+    	                                10101 == _,MMC0,EMAC1,UART0
+    	                                10110 == SPI0,MMC0,UART0,EMAC1
+    	                                10111 == MMC0,SPI0,UART0,USB0
+    	                                11000 == SPI0,MMC0,USB0,UART0
+    	                                11001 == SPI0,MMC0,EMAC1,UART0
+    	                                11010 == _,UART0,SPI0,MMC0
+    	                                11011 == _,UART0,SPI0,MMC0
+    	                                11100 == MMC1,MMC0,UART0,USB0
+    	                                11101 == RESERVED
+    	                                11110 == RESERVED
+    	                                11111 == _,EMAC1,UART0,_
 
-	UART0 = uP RXD(pin18@J3) and TXD(pin17@J3) on Extenstion Card Connector, 
-	MMC0  = SD-Card/connector
-	MMC1  = eMMC/BGA
-	SPI0  = SPIA on trunk connector
+	Legend:	
+	=======
+	UART0 = uP UART0_RXD(pin18@J3) and UART0_TXD(pin17@J3) on Test Extension Card J3 Connector
+	MMC0  = uSD-Card J2 connector
+	MMC1  = eMMC U14
+	SPI0  = SPIA on trunk J1 connector
 	EMAC1 = MII1 (Ethernet Port 1) J5 RJ45 rear connector
-    USB0  = USB-OTG on external connector J6 connector
+    USB0  = USB-OTG on external J6 connector
 		
 
 #### Branch Control and Data Interfaces
