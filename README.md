@@ -111,8 +111,8 @@ consumption.
     - V3P3, V1P8 and VCORE regulators are turned on (microprocessor is on).
 	- unused interfaces are switched off.
 
-#### Power tree
-+++ insert diagram
+#### Tree Power Distribution
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/TreePowerDistribution.PNG)
 
 #### VCORE Regulator
 +++ insert schematic detail
