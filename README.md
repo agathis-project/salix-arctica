@@ -114,28 +114,33 @@ consumption.
 #### Tree Power Distribution
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/TreePowerDistribution.PNG)
 
-#### VCORE Regulator
-+++ insert schematic detail
-
-#### V1P8 Regulator
-+++ insert schematic detail
+#### VCORE and V1P8 Regulator
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VCORE_and_V1P8_regulators.PNG
 
 #### V3P3 Regulator
-+++ insert schematic detail
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/V3P3_regulator.PNG
 
 #### VUSB Regulator
-+++ insert schematic detail
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VUSB_regulator.PNG
 
 #### Power Module Connector and POE Connectors
 +++ insert schematic detail
 
 #### Power Distribution on Trunk Connector
-+++ insert schematic detail
+
+- VSYS    connected to pins A48-50; filtered with FB4(ferrite bead 220 Ohm @1ooMHz) C53(220R) and C106 (100n)
+- VSB3P3  connected to pins A47
+- V3P3    connected to pin  A6
+- GND     connected to pins A32,A45,B5,B7,B16,B18,B20,B25-26,B38,B41,B44,B47,B50
+   - GND is multipurpose:
+      - shared as return path for VSYS,VSB3P3,V3P3 and all digital signals 
+      - shield/return path for high speed controlled impedance signals (USB)
+	  - shield/return path for high speed clocks (SPI and SDIO clocks)
 
 ### Microprocessor
 The microprocessor used in this variant of the root is AM3356BZCZA80 made by TI.
 This is an ARM Cortex A-8 32bit RISC Processor running up to 600MHz specified 
-over an extended industrial temperatures range of -40 to 105C. 
+over an extended industrial temperatures range of -40C to 105C. 
 It includes two Programmable Real-Time Units (PRUs) 32-Bit Load/Store RISC 
 processor capable of running at 200 MHz.
 
