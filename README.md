@@ -117,6 +117,50 @@ consumption.
 #### VCORE and V1P8 Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VCORE_and_V1P8_regulators.PNG)
 
+- V1P8 rail supplies:
+  - a range of uP power pins; see pages *Microprocessor Power* and *Low Power 
+    DDR*
+  - LPDDR memory
+  - eMMC memory
+  - Ethernet Phy devices
+
+- VCORE rail supplies the uP (V_CORE and V_MPU connected together)
+
+- V1P8 and VCORE regulators feed from VSYS through FB5, C48, C54 filters.
+
+- The regulators are implemented with FAN5355 buck converter fabricated by 
+Fairchild/On Semi; they can be controlled over i2c and two different models 
+with distinct i2c addresses are used.
+
+- V1P8 and VCORE regulators are synchronized with SYNC3M clock running at about 
+ ~3MHz and driven 180deg phase appart to reduce the switching noise injected
+ into the VSYS rail.
+
+- VCORE regulator output can be switched using **VSEL** signal between two 
+  voltages programmed over i2c: 
+   - the default start-up output voltage for **VSEL = 0 is 1.05V** and can be 
+   used as such for the initial power-up of the uP.
+   - the default start-up output voltage for **VSEL = 1 is 1.2V** and NEEDS 
+   TO BE ADJUSTED before use; if there is no need for to switch the output
+   voltage during normal operation, then the second voltage must be set to same
+   value as first (safer operation)
+
+- the two regulators are enabled by the EN-VCORE and EN-V1P8 signals controlled
+  by the uC.
+
+- the two regulators offer a light load operation mode; this mode should be 
+  available for testing its relevance for the performance of the whole system.
+  
+- the PWRCLK signal is forwarded to the trunk interface for use by branches
+  to synchronize their SMPS regulators for lower noise systems.
+  
+- **CORE-MON** signal is used as remote sense and provides the voltage directly 
+  from the microprocessor die.
+  
+  
+
+
+
 #### V3P3 Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/V3P3_regulator.PNG)
 
