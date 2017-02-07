@@ -111,6 +111,8 @@ consumption.
     - V3P3, V1P8 and VCORE regulators are turned on (microprocessor is on).
 	- unused interfaces are switched off.
 
+***
+	
 #### Tree Power Distribution:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/TreePowerDistribution.PNG)
 
@@ -142,6 +144,8 @@ Ethernet ports on root as separated by the magnetics circuits.
   
 - The specifications for the trunk power rails are controlled by the [AP-7 
   Agathis Trunk Standard.](https://github.com/agathis-project/pinus-rigida)
+
+***
   
 #### VCORE and V1P8 Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VCORE_and_V1P8_regulators.PNG)
@@ -185,13 +189,13 @@ with distinct i2c addresses are used.
   
 - **CORE-MON** signal is used as remote sense and provides the voltage directly 
   from the microprocessor die.
-  
-  
 
-
+***
 
 #### V3P3 Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/V3P3_regulator.PNG)
+
+***
 
 #### VUSB Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VUSB_regulator.PNG)
