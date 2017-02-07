@@ -114,34 +114,34 @@ consumption.
 #### Tree Power Distribution:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/TreePowerDistribution.PNG)
 
-- The tree system is supplied by the power module (aka potato module) which
-adapts the DC input power to feed the VSYS rail or to charge a back-up battery.
+- The gateway is supplied by the power module which adapts the **DC input** 
+power to feed the VSYS rail or to charge a back-up battery.
 
-- The the VSYS can be sourced by a "Power over Ethernet" block which can charge
+- **VSYS** can be sourced by a *Power over Ethernet* block which can charge
 the battery as well; this PoE block picks up the DC power feeds from the 
-Ethernet ports on root as separated by the magnetics circuits on same root.
+Ethernet ports on root as separated by the magnetics circuits.
 
-- VSYS serves as the bulk power distributed to the gateway.
+- **VSYS** serves as the bulk power distributed to the gateway.
 
-- VSYS may occasionally feed from USB-OTG port on root for field servicing or
-  lab development work.
+- **VSYS** may occasionally feed from USB-OTG port on root for field servicing 
+  or lab development work.
 
-- A power module is mandatory to operate the gateway - same way as a PC 
+- **The power module is mandatory to operate the gateway** - same way as a PC 
   motherboard needs a power adapter to run.
   
 - **V1P8** and **VCORE** are local distribution rails for the root alone.
 
-- **V3P3** is a power rail that is **ON** while the gateway is in **active mode**; 
-  it is distributed to the branches to supply the data interface circuits.
+- **V3P3** is a power rail that is **ON** only for an **active** gateway; 
+  it supplies the the root and branches data interface circuits.
 
-- **VSB3P3** is a power rail that is always on; it is distributed to the 
-  branches to supply the control interface circuits.
+- **VSB3P3** is a power rail that is always **ON**; it supplies root and the 
+  branches control interface circuits.
 
-- **USB-OTG** port may source or sink power when configured as device or
-  source power when configured as device.
+- **USB-OTG** port may **sink power** when configured as device or **source 
+  power** when configured as device.
   
-- More data about the gateway power rails is available on [AP-7 Agathis Trunk 
-  Standard](https://github.com/agathis-project/pinus-rigida)
+- The specifications for the trunk power rails are controlled by the [AP-7 
+  Agathis Trunk Standard.](https://github.com/agathis-project/pinus-rigida)
   
 #### VCORE and V1P8 Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VCORE_and_V1P8_regulators.PNG)
