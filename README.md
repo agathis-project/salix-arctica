@@ -57,45 +57,60 @@ At the time of editing this document:
 
 ## Design
 
-- Design goals and overall constraints and requirements:
-  - use devices with temperature range -40 to 85C or beyond; use of device
+**Design goals and overall constraints and requirements:**
+- use devices with temperature range -40 to 85C or beyond; use of device
   variants manufactured for reduced temperature range such as 0-70C shall be 
   limited to prototypes for functional development; product variants for lower
   temperature ranges shall be the exception and marked as such.
-  - strong preference for the use of devices with full datasheet and support 
-    available free of NDAs.
-  - root size excluding connectors; square with side less than 85mm
-  - the trunk connector needs to support speeds in higher than 5Gbps per 
+
+- strong preference for the use of devices with full datasheet and support 
+  available free of NDAs.
+
+- root size excluding connectors; square with side less than 85mm
+
+- the trunk connector needs to support speeds higher than 5Gbps per 
   differential line.
-  - limit total system power to 13.5W.
-  - design turn-off capability for all interfaces that may not be used.
-  - optimize EMC with consistent margin against most stringent standards to 
+
+- limit total system power to 13.5W.
+
+- turn-off capability for all interfaces that may not be used.
+
+- optimize EMC with consistent margin against most stringent standards to 
   allow operation in harshest electrical conditions.
-  - capable to operate from Li-Ion 1-cell battery.
-  - capable to operate from USB-OTG port power supply for development and 
+
+- capable to operate from Li-Ion 1-cell battery.
+
+- capable to operate from USB-OTG port power supply for development and 
   field servicing purposes.
-  - support operation from PoE (Power over Ethernet).
-  - capable of running a main stream Linux distribution.
-  - include Trusted Platform and Crypto-Authentication hardware solutions.
-  - provide hardware solution for host authentication when operating as device 
+
+- support operation from PoE (Power over Ethernet).
+
+- capable to run a main stream Linux distribution.
+
+- include Trusted Platform and Crypto-Authentication hardware solutions.
+
+- provide hardware solution for host authentication when operating as device 
   on USB-OTG port.
 
 ### Power management
 #### Power strategy
-- microcontroller and microprocessor to be programmed for lowest power 
-consumption.
-- turn off all unused features.
+
+- **the Gateway must be seen as a battery operated system with opportunistic 
+  access to other power sources.** This perspective helps to design a power 
+  efficient gateway with extendend availability.
+
+- uC and uP must be programmed for lowest power consumption; such us turn off 
+  the christmas lights - nobody is watching anyway.
 - VSYS and VSB3P3 rails are always on; use with care; pay attention to all 
   bias and leakage currents.
 
-
-- power states: 
+- hardware power states: 
   - **power-down**
 	- VSB3P3 below minimum level to safely operate the uC.
 	
   - **stand-by:**
     - VSB3P3 is at a safe operating level.
-    - uC - watching its internal real time clock and runk interface for a 
+    - uC - watching its internal real time clock and trunk interface for a 
 	wake-up/interrupt event.
 	- V3P3, V1P8 and VCORE regulators are turned off (uP and its external 
 	interfaces are powered down).
@@ -103,8 +118,8 @@ consumption.
 	remaining devices before full hardware shut-down occurs.
 	
   - **active:**
-    - V3P3, V1P8 and VCORE regulators are turned on as well as the uP.
-	- unused interfaces are turned off.
+    - uP is on.
+	- all unused interfaces are turned off.
 
 ***
 	
@@ -112,7 +127,7 @@ consumption.
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/TreePowerDistribution.PNG)
 
 - The gateway is supplied by the power module which adapts the **DC input** 
-power to feed the VSYS rail or to charge a back-up battery.
+  power to feed the **VSYS** rail or to charge a **back-up battery**.
 
 - **VSYS** can be sourced by a *Power over Ethernet* block which can charge
   the battery as well; this PoE stage picks up the DC power feeds from the 
