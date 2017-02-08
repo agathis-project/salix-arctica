@@ -12,19 +12,21 @@
 
 ## Idea
 ### Abstract
-The root module is the first hardware component designed for the Agathis 
-Gateway. It is the central processing unit of the gateway build around a Linux 
-running microprocessor.  The root is build to support robust stacked systems 
+This root module is the first hardware component designed for the Agathis 
+Gateway. It is the central processing unit build around a Linux 
+running microprocessor.  The root is build to support robust stacked systems, 
 sharing a vertical interconnect trunk with the branch modules. The tree system
 is powered by an integrated stacked module. The root integrates a tree port 
-Ethernet switch whereas the branch modules are custom designed to interface 
+Ethernet switch whereas the branch modules are specifically designed to interface 
 with any communication medium. 
 
+###Motivation: 
 
-### Motivation and Rationale
-####Motivation: NEED TO CONNECT THINGS WITH OPEN SOURCE HARDWARE
+- Need to connect things with open source hardware. Not much to 
+  say about it; something is a mess out there and something is missing. The 
+  current PC oriented architecture was not ment for the job.
 
-#### Rationale:
+### Rationale:
 - By large, the communication interface for majority of things is one of the 
   basic physical layer interfaces such us: UART, SPI, I2C, SDIO, USB and the 
   ubiquitous GPIO.
@@ -39,16 +41,13 @@ with any communication medium.
   electrical and mechanical conditions, wide temperature and humidity range and
   corrosive mediums. 
 
-- We are building here a system that easily adapts to such conditions, provides
-  scalability and modularity in field conditions and is OPEN SOURCE.
+- We are building a system that easily adapts to harsh environmental 
+  conditions, provides scalability and modularity in field conditions and 
+  IS OPEN SOURCE and wide open or optiamal custom solutions.
 
-- First module of this gateway is the root module, as covered by this document.
-
+- First module of this gateway is this root module, as covered by herein.
 
 ### Compatibility
-
-There is no compatibility concern on root design; the burden of compatibility 
-is with all other modules designs.
 
 At the time of editing this document:
 - A standard/specification for the trunk electrical interface is in the works.
@@ -56,14 +55,9 @@ At the time of editing this document:
 - A standard/specification for the electrical interface with the power module is
   yet to be started.
 
-These standards are essentially derived from the root design.
-
-So, be careful with the root design !
-
-
 ## Design
 
-- design goals and overall constraints and requirements:
+- Design goals and overall constraints and requirements:
   - use devices with temperature range -40 to 85C or beyond; use of device
   variants manufactured for reduced temperature range such as 0-70C shall be 
   limited to prototypes for functional development; product variants for lower
@@ -71,16 +65,16 @@ So, be careful with the root design !
   - strong preference for the use of devices with full datasheet and support 
     available free of NDAs.
   - root size excluding connectors; square with side less than 85mm
-  - the trunk connector shall be capable to support speeds in excess of 5Gbps 
-  per differential line.
-  - total system power is limited 13.5W
-  - capable to turn-off not used interfaces.
+  - the trunk connector needs to support speeds in higher than 5Gbps per 
+  differential line.
+  - limit total system power to 13.5W.
+  - design turn-off capability for all interfaces that may not be used.
   - optimize EMC with consistent margin against most stringent standards to 
   allow operation in harshest electrical conditions.
   - capable to operate from Li-Ion 1-cell battery.
   - capable to operate from USB-OTG port power supply for development and 
   field servicing purposes.
-  - support operation from PoE.
+  - support operation from PoE (Power over Ethernet).
   - capable of running a main stream Linux distribution.
   - include Trusted Platform and Crypto-Authentication hardware solutions.
   - provide hardware solution for host authentication when operating as device 
@@ -91,25 +85,26 @@ So, be careful with the root design !
 - microcontroller and microprocessor to be programmed for lowest power 
 consumption.
 - turn off all unused features.
-- VSYS rail is always on; use with care.
-- VSB3P3 rail is always on; use with care.
+- VSYS and VSB3P3 rails are always on; use with care; pay attention to all 
+  bias and leakage currents.
+
 
 - power states: 
   - **power-down**
-	- VSB3P3 below minimum level to operate the microcontroller.
-	- all devices in the system are turned off or instructed to do so by the 
-	microcontroller; undisciplined branches may screw-up the root.
-
+	- VSB3P3 below minimum level to safely operate the uC.
+	
   - **stand-by:**
     - VSB3P3 is at a safe operating level.
-    - microcontroller runs - watching its internal real time clock and 
-	trunk interface for a wake-up event.
-	- V3P3, V1P8 and VCORE regulators are turned off (microprocessor and its 
-	external interfaces are powered down).
+    - uC - watching its internal real time clock and runk interface for a 
+	wake-up/interrupt event.
+	- V3P3, V1P8 and VCORE regulators are turned off (uP and its external 
+	interfaces are powered down).
+	- uC monitor VSYS to detect imminent power failure and turn-off all 
+	remaining devices before full hardware shut-down occurs.
 	
   - **active:**
-    - V3P3, V1P8 and VCORE regulators are turned on (microprocessor is on).
-	- unused interfaces are switched off.
+    - V3P3, V1P8 and VCORE regulators are turned on as well as the uP.
+	- unused interfaces are turned off.
 
 ***
 	
@@ -120,8 +115,9 @@ consumption.
 power to feed the VSYS rail or to charge a back-up battery.
 
 - **VSYS** can be sourced by a *Power over Ethernet* block which can charge
-the battery as well; this PoE block picks up the DC power feeds from the 
-Ethernet ports on root as separated by the magnetics circuits.
+  the battery as well; this PoE stage picks up the DC power feeds from the 
+  Ethernet ports on root; use existing ethernet magnetics circuits - specified 
+  for PoE+ operation.
 
 - **VSYS** serves as the bulk power distributed to the gateway.
 
@@ -134,15 +130,16 @@ Ethernet ports on root as separated by the magnetics circuits.
 - **V1P8** and **VCORE** are local distribution rails for the root alone.
 
 - **V3P3** is a power rail that is **ON** only for an **active** gateway; 
-  it supplies the the root and branches data interface circuits.
+  it supplies the the root and branches **data interface circuits**.
 
 - **VSB3P3** is a power rail that is always **ON**; it supplies root and the 
-  branches control interface circuits.
+  branches **control interface circuits**.
 
-- **USB-OTG** port may **sink power** when configured as device or **source 
-  power** when configured as device.
+- **USB-OTG** port may either: 
+  - **sink power** when configured as USB Device. 
+  - **source power** when configured as USB Host.
   
-- The specifications for the trunk power rails are controlled by the [AP-7 
+- The specifications for the trunk power rails are governed by the [AP-7 
   Agathis Trunk Standard.](https://github.com/agathis-project/pinus-rigida)
 
 ***
@@ -150,45 +147,45 @@ Ethernet ports on root as separated by the magnetics circuits.
 #### VCORE and V1P8 Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VCORE_and_V1P8_regulators.PNG)
 
-- V1P8 rail supplies:
-  - a range of uP power pins; see pages *Microprocessor Power* and *Low Power 
-    DDR*
+- **V1P8** rail supplies followings:
+  - uP
   - LPDDR memory
   - eMMC memory
   - Ethernet Phy devices
 
-- VCORE rail supplies the uP (V_CORE and V_MPU connected together)
+- **VCORE** rail supplies the uP (V_CORE and V_MPU connected together)
 
-- V1P8 and VCORE regulators feed from VSYS through FB5, C48, C54 filters.
+- **V1P8 and VCORE** regulators feed from VSYS through FB5, C48, C54 filters.
 
-- The regulators are implemented with FAN5355 buck converter fabricated by 
-Fairchild/On Semi; they can be controlled over i2c and two different models 
-with distinct i2c addresses are used.
+- These regulators are implemented with FAN5355 buck converter fabricated by 
+  Fairchild/On Semi; they can be controlled over i2c; two different models 
+  with distinct i2c addresses are used.
 
-- V1P8 and VCORE regulators are synchronized with SYNC3M clock running at about 
- ~3MHz and driven 180deg phase apart to reduce the switching noise injected
- into the VSYS rail.
+- **V1P8 and VCORE** regulators are synchronized with SYNC3M clock running at 
+  nominal 3MHz and phased at 180deg to reduce the switching noise injected
+  into the VSYS rail.
 
-- VCORE regulator output can be switched using **VSEL** signal between two 
-  voltages programmed over i2c: 
-   - the default start-up output voltage for **VSEL = 0 is 1.05V** and can be 
-   used as such for the initial power-up of the uP.
-   - the default start-up output voltage for **VSEL = 1 is 1.2V** and NEEDS 
-   TO BE ADJUSTED before use; if there is no need for to switch the output
+- **VCORE** regulator output can be switched signal between two 
+  voltages (programmable over i2c) using **VSEL** signal: 
+   - the default start-up output voltage for **VSEL = "low" is 1.05V** and can 
+   be used as such for the initial power-up of the uP.
+   - the default start-up output voltage for **VSEL = "high" is 1.2V and MUST 
+   BE ADJUSTED** before use; if there is no need to switch the output
    voltage during normal operation, then the second voltage must be set to same
-   value as first (safer operation)
+   value as first (safer operation).
 
-- the two regulators are enabled by the EN-VCORE and EN-V1P8 signals controlled
-  by the uC.
+- **V1P8 and VCORE** regulators are enabled by the **EN-VCORE and EN-V1P8** 
+  signals controlled by the uC.
 
 - the two regulators offer a light load operation mode; this mode should be 
-  available for testing its relevance for the performance of the whole system.
+  made available by the uC firmware to test its relevance for the system 
+  performance.
   
-- the PWRCLK signal is forwarded to the trunk interface for use by branches
-  to synchronize their SMPS regulators for lower noise systems.
+- the PWRCLK signal is forwarded to the trunk interface to synchronize SMPS
+  regulators on branches.
   
-- **CORE-MON** signal is used as remote sense and provides the voltage directly 
-  from the microprocessor die.
+- **CORE-MON** is a remote sense signal that provides the VCORE regulator 
+  feedback voltage directly from the microprocessor die.
 
 ***
 
@@ -200,15 +197,15 @@ with distinct i2c addresses are used.
 #### VUSB Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VUSB_regulator.PNG)
 
-#### Synchronizing (locking) VCORE, V1P8, V3P3 and VUSB regulators switching frequency:
+#### Locking switching frequency for VCORE, V1P8, V3P3 and VUSB regulators:
 - VSYS power rail is shared among all branches in a tree; each branch that feeds 
   from this line may introduce noise into it that needs to be limited; worst 
   offenders are the switching mode power supplies.
-- synchronizing SMPS regulators is a simple method to reduce the ripple noise 
-  generated by the SMPS feeding from VSYS:
-  1. ripple frequency is constant and derived from same controllable source; this
-     means easier filtering; the microcontroller may even implement a spread 
-	 spectrum clock if needed.
+- A simple method to reduce the ripple noise is to synchronize or lock the 
+  switching frequency of the SMPS regulators feeding from VSYS:
+  1. ripple frequency is constant and derived from same controllable source; 
+     this means easier filtering; the microcontroller may even implement a 
+	 spread spectrum clock if needed.
   2. this design allows to control the phase of the ripple to avoid peak 
      overlapping; this means lower ripple noise injected into the system.
   3. each branch using the PWRCLK synchronization signal can be designed to 
@@ -216,9 +213,9 @@ with distinct i2c addresses are used.
 	 each branch regulator will switch at different time lowering the overall 
 	 noise injected into VSYS rail.
   
-- drive MSYNC3M @ 2.4MHz 
-- drive SYNC3M @ 3MHz
-- generate MSYNC3M and SYNC3M from uC using an internal common 12MHz clock.  
+- drive MSYNC3M at 2.4MHz 
+- drive SYNC3M at 3MHz
+- generate MSYNC3M and SYNC3M from a common 12MHz clock.  
 
 #### Power Module Connector and POE Connectors
 +++ insert schematic detail
@@ -235,9 +232,9 @@ with distinct i2c addresses are used.
 	  - shield/return path for high speed clocks (SPI and SDIO clocks)
 
 ### Microprocessor
-The microprocessor used in this variant of the root is AM3356BZCZA80 made by TI.
-This is an ARM Cortex A-8 32bit RISC Processor running up to 600MHz specified 
-over an extended industrial temperatures range of -40C to 105C. 
+Use AM3356BZCZA80 by TI.
+This is an ARM Cortex A-8 32bit RISC Processor running at max 600MHz and is 
+specified over an extended industrial temperatures range of -40C to +105C. 
 It includes two Programmable Real-Time Units (PRUs) 32-Bit Load/Store RISC 
 processor capable of running at 200 MHz.
 
@@ -247,9 +244,13 @@ processor capable of running at 200 MHz.
 The microprocessor uses 3 power rails (V3P3, V1P8 and VCORE) controlled by the 
 microcontroller.
 
-- RTC is disabled
-- RTC LDO is disabled
-- power-up sequence:
+- Relevant uP settings:
+  - uP internal RTC block is disabled
+  - uP internal RTC LDO regulator is disabled
+
+***
+
+##### power-up sequence:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/AM335x_powerup.PNG)
 - power down sequence:
   1. turn off CLK_M_OSC by asserting PWRONRSTn low.
@@ -346,17 +347,27 @@ microcontroller.
 #### Branch USB Interfaces
 
 
-#### LPDDR Memory
-+++ insert AM335x diagram or schematic diagram
+#### LPDDR Memory:
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_LPDDR.PNG)
 
-#### eMMC and SD-Card Memories
-+++ insert schematic detail
+***
 
-#### Ethernet
-+++ insert schematic detail
+#### eMMC and SD-Card Memories:
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_emmc_sdcard.PNG)
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/emmc_sdcard.PNG)
 
-#### JTAG and Debug Signals
-+++ insert schematic detail
+***
+
+#### Ethernet:
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_mii.PNG)
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/eth_phy.PNG)
+
+
+***
+
+#### uP Clocks, Reset, JTAG and UART0 Signals:
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_rst_jtag_clk_uart0.PNG)
+
 
 ### Microcontroller
 #### Power, Reset and Clocking
@@ -371,11 +382,15 @@ microcontroller.
 #### I2C buses
 +++ insert schematic detail
 
-#### Trusted Platform Module
-+++ insert schematic detail
+***
 
-#### Crypto Authentication
-+++ insert schematic detail
+#### Trusted Platform Module:
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/tpm.PNG)
+
+***
+
+#### Crypto Authentication:
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/Crypto_auth.PNG)
 
 ### USB-OTG and USB Host
 +++ insert schematic detail
