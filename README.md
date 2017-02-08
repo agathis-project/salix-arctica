@@ -329,9 +329,22 @@ microcontroller.
     USB0  = USB-OTG on external J6 connector
 	_     = unavailable device 
 		
+***
+		
+#### Branch Control Interfaces:
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_branch_control.PNG)
 
-#### Branch Control and Data Interfaces
-+++ insert schematic details (CPU IO page)
+
+***
+
+#### Branch Data Interfaces:
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_trunk_data_circuits.PNG)
+
+
+***
+
+#### Branch USB Interfaces
+
 
 #### LPDDR Memory
 +++ insert AM335x diagram or schematic diagram
@@ -367,15 +380,21 @@ microcontroller.
 ### USB-OTG and USB Host
 +++ insert schematic detail
 
-### Trunk interface
-+++ insert schematic detail
+***
 
-### Test Extension Connector 
-+++ insert schematic detail
+### Trunk Connector:
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/Trunk_connector.PNG)
 
-## Schematic
-The schematic for this design was done in Altium.
-See it in V1 folder in the repo.
+***
+
+### Test Extension Connector:
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/Test_extension_card_connector.PNG)
+
+## Schematic 
+[The schematic](https://github.com/agathis-project/salix-arctica/blob/master/V1/SCH-1-1-1.pdf)
+for this design was captured in Altium and is available as pdf and project 
+file package in V1 folder of this repo.
+
 
 ## Layout
 The layout for this design was done in Altium.
