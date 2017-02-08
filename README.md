@@ -41,9 +41,13 @@ with any communication medium.
   electrical and mechanical conditions, wide temperature and humidity range and
   corrosive mediums. 
 
-- We are building a system that easily adapts to harsh environmental 
-  conditions, provides scalability and modularity in field conditions and 
-  IS OPEN SOURCE and wide open or optiamal custom solutions.
+
+- **Build a gateway that can be placed where the things are** - place no 
+  requirements on things.
+
+- Build a system that easily adapts to harsh environmental conditions, 
+  provides scalability and modularity in field conditions,**IS OPEN SOURCE** 
+  and wide open for optimal custom solutions**.
 
 - First module of this gateway is this root module, as covered by herein.
 
