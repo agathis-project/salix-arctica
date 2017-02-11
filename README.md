@@ -8,60 +8,58 @@
     Product Codes: PCB-1-(1)-1, PCA-1-(1)-1
 
 	
-# AP-1 Root Module HW
+# Root Module HW
 
-## Idea
-### Abstract
-This root module is the first hardware component designed for the Agathis 
-Gateway. It is the central processing unit build around a Linux 
-running microprocessor.  The root is build to support robust stacked systems, 
-sharing a vertical interconnect trunk with the branch modules. The tree system
-is powered by an integrated stacked module. The root integrates a tree port 
-Ethernet switch whereas the branch modules are specifically designed to interface 
-with any communication medium. 
+## 1. Abstract
+The root module is  the core component of the Agathis Gateway which is build by 
+stacking the root module and branch modules, sharing a vertical interconnect 
+sub-system. The root integrates a tree port Ethernet switch using two ports to 
+connect directly with the external world and one internal port to connect -
+through the microprocessor - with a plurality of things over media interfaces 
+located on branches. 
 
-###Motivation: 
+## 2. Rationale:
+- As this is the first module of the Agathis Gateway, the rationale for this AP
+  is made from a system perspective.
 
-- Need to connect things with open source hardware. Not much to 
-  say about it; something is a mess out there and something is missing. The 
-  current PC oriented architecture was not ment for the job.
+**Current technology:**
+- By large, the interface used by majority of things is one of the basic 
+  physical layer interfaces such us: UART, SPI, I2C, SDIO, USB and the ubiquitous 
+  GPIO.
 
-### Rationale:
-- By large, the communication interface for majority of things is one of the 
-  basic physical layer interfaces such us: UART, SPI, I2C, SDIO, USB and the 
-  ubiquitous GPIO.
+- Altough today's microprocessors have these interfaces available for embedded 
+  applications, there is no architecture supporting a modular scalable construction.
+
+- A large number of things located in uncontrolled environments; they need to 
+  deal with the scarcity of power supply, harsh electrical and mechanical 
+  conditions, wide temperature and humidity ranges and corrosive athmosphere.
+
+- Practically, there is no open scallable gateway designed to interface with 
+  things in these environments.
   
-- Even though todays microprocessors have these interfaces available, 
-  there is no open architecture supporting a modular scalable construction 
-  similar to what once PCI did with its implementation variants did for PC 
-  industry, but this time applied to the new set of interfaces listed above.
+- Current solutions to interface with things in un-controlled environments use 
+  industrial single boards computers assembled in custom solutions with limited 
+  or no scalability or field flexibility.
+  
+**Agathis Gateway solution:** 
 
-- Majority of things are out-there, not necessarily in controlled housed
-  conditions; they need to deal with scarcity of power supply, harsh 
-  electrical and mechanical conditions, wide temperature and humidity range and
-  corrosive mediums. 
+- **A stackable field reconfigurable gateway** that can adapt to evolving 
+  things and grow with their numbers and diversity.
 
+- **A gateway that talks the language of things**, be it UART, I2C, SPI, SDIO,
+  USB, PCIe or even General Purpose IOs.
 
-- **Build a gateway that can be placed where the things are** - place no 
-  requirements on things.
+- **A gateway that can be installed where the things are** from the sea bed to 
+  Mars surface, from a floor plant to a deep mining operation. 
 
-- Build a system that easily adapts to harsh environmental conditions, 
-  provides scalability and modularity in field conditions,**IS OPEN SOURCE** 
-  and wide open for optimal custom solutions**.
+- **An open source gateway** - that supports competitiveness and fast 
+  development of new interfaces with things.
+  
+- First module of this gateway is the root module, as covered herein.
 
-- First module of this gateway is this root module, as covered by herein.
+### 3. Content
 
-### Compatibility
-
-At the time of editing this document:
-- A standard/specification for the trunk electrical interface is in the works.
-- A standard/specification for the mechanical interface is yet to be started.
-- A standard/specification for the electrical interface with the power module is
-  yet to be started.
-
-## Design
-
-**Design goals and overall constraints and requirements:**
+#### 3.1. Design goals and overall constraints and requirements:
 - use devices with temperature range -40 to 85C or beyond; use of device
   variants manufactured for reduced temperature range such as 0-70C shall be 
   limited to prototypes for functional development; product variants for lower
@@ -96,8 +94,9 @@ At the time of editing this document:
 - provide hardware solution for host authentication when operating as device 
   on USB-OTG port.
 
-### Power management
-#### Power strategy
+#### 3.2. Power management
+
+##### 3.2.1 Power design strategy:
 
 - **the Gateway must be seen as a battery operated system with opportunistic 
   access to other power sources.** This perspective helps to design a power 
@@ -127,7 +126,7 @@ At the time of editing this document:
 
 ***
 	
-#### Tree Power Distribution:
+##### 3.2.2. Tree Power Distribution:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/TreePowerDistribution.PNG)
 
 - The gateway is supplied by the power module which adapts the **DC input** 
@@ -163,7 +162,7 @@ At the time of editing this document:
 
 ***
   
-#### VCORE and V1P8 Regulator:
+##### 3.2.3. VCORE and V1P8 Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VCORE_and_V1P8_regulators.PNG)
 
 - **V1P8** rail supplies followings:
@@ -208,15 +207,15 @@ At the time of editing this document:
 
 ***
 
-#### V3P3 Regulator:
+#### 3.2.4. V3P3 Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/V3P3_regulator.PNG)
 
 ***
 
-#### VUSB Regulator:
+#### 3.2.5. VUSB Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VUSB_regulator.PNG)
 
-#### Locking switching frequency for VCORE, V1P8, V3P3 and VUSB regulators:
+#### 3.2.6. Locking switching frequency for VCORE, V1P8, V3P3 and VUSB regulators:
 - VSYS power rail is shared among all branches in a tree; each branch that feeds 
   from this line may introduce noise into it that needs to be limited; worst 
   offenders are the switching mode power supplies.
@@ -236,10 +235,10 @@ At the time of editing this document:
 - drive SYNC3M at 3MHz
 - generate MSYNC3M and SYNC3M from a common 12MHz clock.  
 
-#### Power Module Connector and POE Connectors
+#### 3.2.7. Power Module Connector and POE Connectors
 +++ insert schematic detail
 
-#### Power Distribution on Trunk Connector
+#### 3.2.8. Power Distribution on Trunk Connector
 
 - VSYS    connected to pins A48-50; filtered with FB4(ferrite bead 220 Ohm @1ooMHz) C53(220R) and C106 (100n)
 - VSB3P3  connected to pins A47
@@ -250,16 +249,16 @@ At the time of editing this document:
       - shield/return path for high speed controlled impedance signals (USB)
 	  - shield/return path for high speed clocks (SPI and SDIO clocks)
 
-### Microprocessor
+### 3.3. Microprocessor
 Use AM3356BZCZA80 by TI.
 This is an ARM Cortex A-8 32bit RISC Processor running at max 600MHz and is 
 specified over an extended industrial temperatures range of -40C to +105C. 
 It includes two Programmable Real-Time Units (PRUs) 32-Bit Load/Store RISC 
 processor capable of running at 200 MHz.
 
-#### Power, Boot, Reset and Clocking
+#### 3.3.1. Power, Boot, Reset and Clocking
 
-##### Power-up and Power-down
+##### 3.3.1.1. Power-up and Power-down
 The microprocessor uses 3 power rails (V3P3, V1P8 and VCORE) controlled by the 
 microcontroller.
 
@@ -269,13 +268,13 @@ microcontroller.
 
 ***
 
-##### power-up sequence:
+** Power-Up Sequence:**
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/AM335x_powerup.PNG)
 - power down sequence:
   1. turn off CLK_M_OSC by asserting PWRONRSTn low.
   2. turn off power rails in reverse order referenced to power-up order.
   
-##### Boot Configuration
+##### 3.1.1.2.  Boot Configuration
 
     Signals translation table:
 
@@ -351,65 +350,78 @@ microcontroller.
 		
 ***
 		
-#### Branch Control Interfaces:
+#### 3.3.2. Branch Control Interfaces:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_branch_control.PNG)
 
 
 ***
 
-#### Branch Data Interfaces:
+#### 3.3.3. Branch Data Interfaces:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_trunk_data_circuits.PNG)
 
 
 ***
 
-#### Branch USB Interfaces
+#### 3.3.4. Branch USB Interfaces
 
 
-#### LPDDR Memory:
+#### 3.3.5. LPDDR Memory:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_LPDDR.PNG)
 
 ***
 
-#### eMMC and SD-Card Memories:
+#### 3.3.6. eMMC and SD-Card Memories:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_emmc_sdcard.PNG)
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/emmc_sdcard.PNG)
 
 ***
 
-#### Ethernet:
+#### 3.3.7. Ethernet:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_mii.PNG)
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/eth_phy.PNG)
 
 
 ***
 
-#### uP Clocks, Reset, JTAG and UART0 Signals:
+#### 3.3.8. uP Clocks, Reset, JTAG and UART0 Signals:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_rst_jtag_clk_uart0.PNG)
 
 
-### Microcontroller
-#### Power, Reset and Clocking
-+++ insert schematic detail
+### 3.4. Microcontroller
 
-#### Root ID Eeprom
-+++ insert schematic detail
+#### 3.4.1. Power, Reset and Clocking
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_power.PNG)
 
-#### Branch Control
-+++ insert schematic detail
+#### 3.4.2. Root ID Eeprom
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_card_id_eeprom.PNG)
 
-#### I2C buses
-+++ insert schematic detail
+#### 3.4.3. VBUS Host Voltage Doubler
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_vbus_voltage_doubler.PNG)
+
+
+#### 3.4.4. I2C buses
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_i2c.PNG)
 
 ***
 
-#### Trusted Platform Module:
+#### 3.4.5. Trusted Platform Module:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/tpm.PNG)
 
 ***
 
-#### Crypto Authentication:
+#### 3.4.6. Crypto Authentication:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/Crypto_auth.PNG)
+
+***
+
+
+
+
+
+
+
+
+
 
 ### USB-OTG and USB Host
 +++ insert schematic detail
