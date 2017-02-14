@@ -60,36 +60,40 @@ located on branches.
 ### 3. Content
 
 #### 3.1. Design goals and overall constraints and requirements:
-- use devices with temperature range -40 to 85C or beyond; use of device
-  variants manufactured for reduced temperature range such as 0-70C shall be 
-  limited to prototypes for functional development; product variants for lower
-  temperature ranges shall be the exception and marked as such.
 
-- strong preference for the use of devices with full datasheet and support 
-  available free of NDAs.
+- operational environmental temperature range at 0W internal power dissipation -40C to 85C.
+  - this is achieved by using components with maximum operational temperature 
+    of 85C.
 
-- root size excluding connectors; square with side less than 85mm
+- operational environmental temperature range at maximum performance power dissipation -40C to 75C.
+  - internal power dissipation increases device temperature; for the entire 
+    module to achieve 85C maximum temperature, the devices running hot should 
+    have higher maximum operational temperature.
 
-- the trunk connector needs to support speeds higher than 5Gbps per 
-  differential line.
+- strong preference for devices with full datasheet and free support; NDA
+  is not an option.
 
-- limit total system power to 13.5W.
+- root size excluding connectors - square, side less than 85mm
 
-- turn-off capability for all interfaces that may not be used.
+- trunk connector supports speeds higher than 5Gbps per differential line.
 
-- optimize EMC with consistent margin against most stringent standards to 
-  allow operation in harshest electrical conditions.
+- total system power max 13.5W.
+
+- all devices with current consumption higher than 0.1mA are turn-off capable.
+
+- optimize EMC for consistent margin against most stringent standards; 
+  characterize these margins during system validation.
 
 - capable to operate from Li-Ion 1-cell battery.
 
 - capable to operate from USB-OTG port power supply for development and 
   field servicing purposes.
 
-- support operation from PoE (Power over Ethernet).
+- support PoE operation as Powered Device and Power Supply Equipment.
 
 - capable to run a main stream Linux distribution.
 
-- include Trusted Platform and Crypto-Authentication hardware solutions.
+- include Trusted Platform Module and Crypto-Authentication hardware solutions.
 
 - provide hardware solution for host authentication when operating as device 
   on USB-OTG port.
@@ -99,17 +103,18 @@ located on branches.
 ##### 3.2.1 Power design strategy:
 
 - **the Gateway must be seen as a battery operated system with opportunistic 
-  access to other power sources.** This perspective helps to design a power 
+  access to other power sources.** This perspective helps design a power 
   efficient gateway with extendend availability.
 
-- uC and uP must be programmed for lowest power consumption; such us turn off 
-  the christmas lights - nobody is watching anyway.
-- VSYS and VSB3P3 rails are always on; use with care; pay attention to all 
-  bias and leakage currents.
-
+- uC and uP must be programmed for lowest system power consumption; such us:
+  turn off the christmas lights - nobody is watching anyway; the battery life
+  time is far more precious.
+  
 - hardware power states: 
   - **power-down**
-	- VSB3P3 below minimum level to safely operate the uC.
+	- VSB3P3 below minimum level to safely operate the uC; the uC knows the 
+	  availability of the system power and always does a controlled
+	  power-down of all devices before the voltage supply goes critical.
 	
   - **stand-by:**
     - VSB3P3 is at a safe operating level.
@@ -119,10 +124,12 @@ located on branches.
 	interfaces are powered down).
 	- uC monitor VSYS to detect imminent power failure and turn-off all 
 	remaining devices before full hardware shut-down occurs.
+    - battery reserve is monitored and used for power management.
 	
   - **active:**
-    - uP is on.
+    - uP is operational and controls its data traffic with branch modules.
 	- all unused interfaces are turned off.
+	- battery reserve is monitored and used for power management.
 
 ***
 	
@@ -132,20 +139,16 @@ located on branches.
 - The gateway is supplied by the power module which adapts the **DC input** 
   power to feed the **VSYS** rail or to charge a **back-up battery**.
 
-- **VSYS** can be sourced by a *Power over Ethernet* block which can charge
-  the battery as well; this PoE stage picks up the DC power feeds from the 
-  Ethernet ports on root; use existing ethernet magnetics circuits - specified 
-  for PoE+ operation.
-
-- **VSYS** serves as the bulk power distributed to the gateway.
-
-- **VSYS** may occasionally feed from USB-OTG port on root for field servicing 
-  or lab development work.
-
-- **The power module is mandatory to operate the gateway** - same way as a PC 
-  motherboard needs a power adapter to run.
+- **VSYS** serves as bulk power distributed to the entired gateway.
   
-- **V1P8** and **VCORE** are local distribution rails for the root alone.
+- **VSYS** can be sourced by an optional *Power over Ethernet* block installed
+  on the power module; this PoE block is wired to the Ethernet magnetics on 
+  root over two connectors; the magnetics must support PoE+ power levels.
+
+- USB-OTG port in device mode should be able supply a limited current to the 
+  power module to feed the VSYS and charge the battery.
+  
+- **V1P8** and **VCORE** are local distribution rails (root only).
 
 - **V3P3** is a power rail that is **ON** only for an **active** gateway; 
   it supplies the the root and branches **data interface circuits**.
@@ -165,75 +168,130 @@ located on branches.
 ##### 3.2.3. VCORE and V1P8 Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VCORE_and_V1P8_regulators.PNG)
 
-- **V1P8** rail supplies followings:
-  - uP
-  - LPDDR memory
-  - eMMC memory
-  - Ethernet Phy devices
+- **V1P8** rail supplies uP, LPDDR, eMMC, Ethernet Phy
 
-- **VCORE** rail supplies the uP (V_CORE and V_MPU connected together)
+- **VCORE** rail supplies uP (V_CORE and V_MPU connected together)
 
 - **V1P8 and VCORE** regulators feed from VSYS through FB5, C48, C54 filters.
 
-- These regulators are implemented with FAN5355 buck converter fabricated by 
-  Fairchild/On Semi; they can be controlled over i2c; two different models 
-  with distinct i2c addresses are used.
+- VCORE and V1P8 regulators are implemented with FAN5355 buck converter 
+  fabricated by Fairchild/On Semi; this device can be controlled over i2c; 
+  two different models with distinct i2c addresses are used.
 
 - **V1P8 and VCORE** regulators are synchronized with SYNC3M clock running at 
   nominal 3MHz and phased at 180deg to reduce the switching noise injected
   into the VSYS rail.
 
-- **VCORE** regulator output can be switched signal between two 
-  voltages (programmable over i2c) using **VSEL** signal: 
-   - the default start-up output voltage for **VSEL = "low" is 1.05V** and can 
-   be used as such for the initial power-up of the uP.
-   - the default start-up output voltage for **VSEL = "high" is 1.2V and MUST 
-   BE ADJUSTED** before use; if there is no need to switch the output
-   voltage during normal operation, then the second voltage must be set to same
-   value as first (safer operation).
-
+- **VCORE** regulator output can be switched between two voltage levels, 
+   programmable over i2c, using **VSEL** signal: 
+   
+   - this feature can be used to change the uP operating power  points (OPP).
+	 
+   - default start-up output voltage for **VSEL = "low" is 1.05V** and can 
+     be used as such for the initial power-up of the uP.
+	 
+   - default start-up output voltage for **VSEL = "high" is 1.2V and MUST 
+     BE ADJUSTED** before use; if there is no need to switch the output
+     voltage during normal operation, then the second voltage must be set to same
+     value as first (safer operation).	 
+	 
 - **V1P8 and VCORE** regulators are enabled by the **EN-VCORE and EN-V1P8** 
   signals controlled by the uC.
 
-- the two regulators offer a light load operation mode; this mode should be 
-  made available by the uC firmware to test its relevance for the system 
-  performance.
+- **V1P8 and VCORE** regulators offer a light load operation mode configurable 
+  over i2c; this mode should be made available by the uC firmware to test its 
+  relevance for the system performance.
   
+- **V1P8 and VCORE** regulators have the output voltage programmable over i2c
+  interface; this feature must be supported by the uC firmware for the system 
+  performance tests and to increase power efficiency; 1% change on operating 
+  voltage leads to about 2% change in power consumption.
+	
 - the PWRCLK signal is forwarded to the trunk interface to synchronize SMPS
-  regulators on branches.
+  regulators on branches; this feature may help to improve the system noise 
+  improvement.
   
 - **CORE-MON** is a remote sense signal that provides the VCORE regulator 
   feedback voltage directly from the microprocessor die.
+  
+- use testpoints t60 and t58 to determine VCORE load current.
+
+- use testpoints t64 and t67 to determine V1P8 load current.
 
 ***
 
 #### 3.2.4. V3P3 Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/V3P3_regulator.PNG)
 
+
+- V3P3 regulator use a buck-boost converter TPS6306 that allows operation from 
+  VSYS below 3.3V.
+  
+- V3P3 and VUSB regulators use same IC type TPS6306 and share MSYNC3M 
+  signal.
+  
+- **V3P3 regulator** is turned ON respective to uP power-up/power-down sequence.
+  
+- drive (uC) **MSYNC3M** HIGH to turn on the power saving mode; this mode
+  needs to be available for system testing to evaluate its contribution to 
+  overall performance.
+  
+- default: drive (uC) **MSYNC3M** with a clock signal of 2.4MHz 
+  (2.2MHz to 2.6MHz) as described in 3.2.6. to allow decreasing system noise - 
+  see 3.2.6.
+  
+- drive (uC) **EN** HIGH to turn ON the regulator.
+
+- **VMON** signal is monitoring the V3P3 voltage - connected to uC A/D 
+  converter.  
+
+- use test points t69 and t65 to determine V3P3 load current.
+
 ***
 
 #### 3.2.5. VUSB Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VUSB_regulator.PNG)
 
-#### 3.2.6. Locking switching frequency for VCORE, V1P8, V3P3 and VUSB regulators:
-- VSYS power rail is shared among all branches in a tree; each branch that feeds 
-  from this line may introduce noise into it that needs to be limited; worst 
-  offenders are the switching mode power supplies.
-- A simple method to reduce the ripple noise is to synchronize or lock the 
-  switching frequency of the SMPS regulators feeding from VSYS:
-  1. ripple frequency is constant and derived from same controllable source; 
-     this means easier filtering; the microcontroller may even implement a 
-	 spread spectrum clock if needed.
-  2. this design allows to control the phase of the ripple to avoid peak 
-     overlapping; this means lower ripple noise injected into the system.
-  3. each branch using the PWRCLK synchronization signal can be designed to 
-     add a small fixed delay to the PWRCLK fed to the next branch; in this way 
-	 each branch regulator will switch at different time lowering the overall 
-	 noise injected into VSYS rail.
+- VUSB regulator use a buck-boost converter TPS6306 that allows to operating 
+  the USB-OTG port in host mode (requires 5V).
+
+- V3P3 and VUSB regulators use same IC type TPS6306 and share MSYNC3M 
+  signal.
+
+- drive (uC) **MSYNC3M** HIGH to turn ON the power saving mode; this mode
+  needs to be available for system testing to evaluate its contribution to 
+  overall performance.
   
-- drive MSYNC3M at 2.4MHz 
-- drive SYNC3M at 3MHz
-- generate MSYNC3M and SYNC3M from a common 12MHz clock.  
+- default: drive (uC) **MSYNC3M** with a clock signal of 2.4MHz 
+  (2.2MHz to 2.6MHz) as described in 3.2.6. to allow decreasing system noise - 
+  see 3.2.6.
+
+- drive (uC) **EN** HIGH to turn ON the regulator.
+
+- **VMON** signal is monitoring the V3P3 voltage - connected to uC A/D converter.  
+
+- use test points t69 and t65 to determine VUSB load current.
+
+
+#### 3.2.6. Locking the switching frequency for VCORE, V1P8, V3P3 and VUSB regulators:
+- VSYS power rail is shared among all root and all branches in a gateway tree; 
+  each branch that feeds from this line may introduce noise into it; this noise
+  needs to be limited; the worst offenders are the switching mode power 
+  supplies.
+  
+- a simple method to reduce the ripple noise is to lock the 
+  switching frequency of the SMPS regulators feeding from VSYS; this can be 
+  done using the uC to generate the switching frequency.
+  
+- the gateway design allows to control the phase of the ripple to avoid peak 
+  overlapping:
+  - each branch using the PWRCLK synchronization signal should add a 47.5ns 
+    delay by using an RC circuit followed by a schmitt-trigger gate supplied 
+    from VSYS to feed the PWRCLK line of the next branch.
+
+- use the uC to generate MSYNC3M and SYNC3M from same 12MHz internal frequency:
+  - divide 12MHz by 5 to generate MSYNC3M at 2.4MHz 50% duty cycle
+  - divide 12MHz by 4 to generate SYNC3M at 3MHz 50% duty cycle
 
 #### 3.2.7. Power Module Connector and POE Connectors
 +++ insert schematic detail
@@ -250,7 +308,7 @@ located on branches.
 	  - shield/return path for high speed clocks (SPI and SDIO clocks)
 
 ### 3.3. Microprocessor
-Use AM3356BZCZA80 by TI.
+Use [AM3356BZCZA80](http://www.ti.com/product/AM3356) by TI.
 This is an ARM Cortex A-8 32bit RISC Processor running at max 600MHz and is 
 specified over an extended industrial temperatures range of -40C to +105C. 
 It includes two Programmable Real-Time Units (PRUs) 32-Bit Load/Store RISC 
@@ -262,15 +320,16 @@ processor capable of running at 200 MHz.
 The microprocessor uses 3 power rails (V3P3, V1P8 and VCORE) controlled by the 
 microcontroller.
 
-- Relevant uP settings:
-  - uP internal RTC block is disabled
+- uP configuration:
+  - uP internal RTC block is disabled (use uC for RTC apps)
   - uP internal RTC LDO regulator is disabled
+  - power-up and reset sequence is controlled by uC
 
 ***
 
 ** Power-Up Sequence:**
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/AM335x_powerup.PNG)
-- power down sequence:
+** Power-Down Sequence:
   1. turn off CLK_M_OSC by asserting PWRONRSTn low.
   2. turn off power rails in reverse order referenced to power-up order.
   
@@ -294,10 +353,17 @@ microcontroller.
     SYSBOOT.0       LCD_DATA0     GPIO.0         PC7
 
 - SYSBOOT signals are latched on rising edge of PWRONRSTn signal:
-  - disable any driver connected to SYSBOOT signal for at least 10us before and 
-    10us after rising edge of PWRONRSTn.
-  - microcontroller drives the appropriate SYSBOOT configuration before driving
-    the rising edge of PWRONRSTn and releases the lines immediately after.
+
+- disable any driver connected to SYSBOOT signals for the period SYSBOOT is 
+  driven by uC; uC to use **SENn** asserted HIGH while scanning the branches
+  that use such drivers with the ADDR bus; this action shall disable these 
+  drivers on respective branches.
+
+- microcontroller drives the appropriate SYSBOOT configuration before driving
+  the rising edge of PWRONRSTn and releases the lines after.
+  
+- uC enables the drivers on branches by asserting SENn while the branches
+  are scanned with the ADDR bus.
 
 **SYSBOOT signals boot configuration**
 
