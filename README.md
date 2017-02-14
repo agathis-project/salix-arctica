@@ -100,7 +100,7 @@ located on branches.
 
 #### 3.2. Power management
 
-##### 3.2.1 Power design strategy:
+##### 3.2.1. Power design strategy:
 
 - **the Gateway must be seen as a battery operated system with opportunistic 
   access to other power sources.** This perspective helps design a power 
@@ -417,7 +417,8 @@ microcontroller.
 		
 #### 3.3.2. Branch Control Interfaces:
 **Control Circuits Diagram from Agathis Trunk Standard**
-![alt text] https://github.com/agathis-project/pinus-rigida/blob/master/control_circuits_diagram.png
+
+![alt text](https://github.com/agathis-project/pinus-rigida/blob/master/control_circuits_diagram.png)
 
 ***
 
