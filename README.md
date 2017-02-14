@@ -174,7 +174,7 @@ located on branches.
 
 - **V1P8 and VCORE** regulators feed from VSYS through FB5, C48, C54 filters.
 
-- VCORE and V1P8 regulators are implemented with FAN5355 buck converter 
+- **VCORE and V1P8** regulators are implemented with FAN5355 buck converter 
   fabricated by Fairchild/On Semi; this device can be controlled over i2c; 
   two different models with distinct i2c addresses are used.
 
@@ -207,7 +207,7 @@ located on branches.
   performance tests and to increase power efficiency; 1% change on operating 
   voltage leads to about 2% change in power consumption.
 	
-- the PWRCLK signal is forwarded to the trunk interface to synchronize SMPS
+- **PWRCLK** signal is forwarded to the trunk interface to synchronize SMPS
   regulators on branches; this feature may help to improve the system noise 
   improvement.
   
@@ -224,21 +224,20 @@ located on branches.
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/V3P3_regulator.PNG)
 
 
-- V3P3 regulator use a buck-boost converter TPS6306 that allows operation from 
+- **V3P3** regulator use a buck-boost converter TPS6306 that allows operation from 
   VSYS below 3.3V.
   
-- V3P3 and VUSB regulators use same IC type TPS6306 and share MSYNC3M 
+- **V3P3 and VUSB** regulators use same IC type TPS6306 and share MSYNC3M 
   signal.
   
 - **V3P3 regulator** is turned ON respective to uP power-up/power-down sequence.
   
-- drive (uC) **MSYNC3M** HIGH to turn on the power saving mode; this mode
+- drive (uC) **MSYNC3M** HIGH to turn ON the power saving mode; this mode
   needs to be available for system testing to evaluate its contribution to 
   overall performance.
   
 - default: drive (uC) **MSYNC3M** with a clock signal of 2.4MHz 
-  (2.2MHz to 2.6MHz) as described in 3.2.6. to allow decreasing system noise - 
-  see 3.2.6.
+  (2.2MHz to 2.6MHz) as described in 3.2.6. to allow decreasing system noise.
   
 - drive (uC) **EN** HIGH to turn ON the regulator.
 
@@ -252,10 +251,10 @@ located on branches.
 #### 3.2.5. VUSB Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VUSB_regulator.PNG)
 
-- VUSB regulator use a buck-boost converter TPS6306 that allows to operating 
+- **VUSB** regulator use a buck-boost converter TPS6306 that allows to operating 
   the USB-OTG port in host mode (requires 5V).
 
-- V3P3 and VUSB regulators use same IC type TPS6306 and share MSYNC3M 
+- **V3P3 and VUSB** regulators use same IC type TPS6306 and share MSYNC3M 
   signal.
 
 - drive (uC) **MSYNC3M** HIGH to turn ON the power saving mode; this mode
@@ -273,7 +272,7 @@ located on branches.
 - use test points t69 and t65 to determine VUSB load current.
 
 
-#### 3.2.6. Locking the switching frequency for VCORE, V1P8, V3P3 and VUSB regulators:
+#### 3.2.6. Lock the switching frequency for VCORE, V1P8, V3P3 and VUSB regulators:
 - VSYS power rail is shared among all root and all branches in a gateway tree; 
   each branch that feeds from this line may introduce noise into it; this noise
   needs to be limited; the worst offenders are the switching mode power 
@@ -417,8 +416,38 @@ microcontroller.
 ***
 		
 #### 3.3.2. Branch Control Interfaces:
+**Control Circuits Diagram from Agathis Trunk Standard**
+![alt text] https://github.com/agathis-project/pinus-rigida/blob/master/control_circuits_diagram.png
+
+***
+
+**uP Branch Control Diagram**
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_branch_control.PNG)
 
+***
+
+**uP Branch Control Diagram**
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_branch_control.PNG)
+
+!!!! signal name migration: **to follow Agathis Trunk Standard**:
+ENn shall change into GEn and TRG shall change into SEn.
+
+- The branch controll interface is controlled by uC in **Stand-By** state and
+  by uP in **Active** State.
+
+- INTGn, INTSn are driven by open drain FETs on branches with 10K/5K pull-ups 
+  on root.
+  
+- A0-2, GEn, SEn are driven by open drain drivers on uC or uP with 10K/5K 
+  pull-ups
+
+- the pull-up resistance is 10K in **Stan-By** state and 5K in **Active** state;
+  internal pull-ups (uC and uP) shall be disabled.
+  
+- transistors Q4-7 implement the logic level translation between V3P3 domain 
+  use by the uP to VSB3P3 used by the uC and the branches.
+
+  
 
 ***
 
