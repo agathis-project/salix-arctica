@@ -454,7 +454,7 @@ ENn shall change into GEn and TRG shall change into SEn.
   domain use by the uP buffers and VSB3P3 domain used by the uC and the 
   branches.
 
-
+.
     Control   uC    uC       uP                   uP     uP State   uP State
     Circuit   Port  Ball     Pin                  Ball   before     after
                                                          PWRONRSTn	PWRONRSTn
