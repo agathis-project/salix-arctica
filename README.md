@@ -315,26 +315,30 @@ processor capable of running at 200 MHz.
 
 #### 3.3.1. Power, Boot, Reset and Clocking
 
-##### 3.3.1.1. Power-up and Power-down
-The microprocessor uses 3 power rails (V3P3, V1P8 and VCORE) controlled by the 
-microcontroller.
+** Power-up and Power-down
+uP uses 3 power rails (V3P3, V1P8 and VCORE) controlled by uC
 
-- uP configuration:
-  - uP internal RTC block is disabled (use uC for RTC apps)
-  - uP internal RTC LDO regulator is disabled
-  - power-up and reset sequence is controlled by uC
-
-***
-
+**- uP power configuration:**
+  - internal RTC block is disabled (use uC for RTC apps)
+  - internal RTC LDO regulator is disabled
+  - VDD_CORE and VDD_MPU are supplied from VCORE rail while all other internal 
+    blocks are supplied from V1P8 rail.
+  - IO buffers voltages are supplied from V3P3 and V1P8 rails as follows:
+    - VDDSHV1,3,5 (root circuits)   = 1.8V by V1P8
+	- VDDSHV2,4,6 (branch circuits) = 3.3V by V3P3
+  
 ** Power-Up Sequence:**
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/AM335x_powerup.PNG)
-** Power-Down Sequence:
+- follow the sequence in the diagram
+- timing values have a tolerance of +/-20%
+** Power-Down Sequence:**
+- in order:
   1. turn off CLK_M_OSC by asserting PWRONRSTn low.
   2. turn off power rails in reverse order referenced to power-up order.
   
-##### 3.1.1.2.  Boot Configuration
-
-    Signals translation table:
+    ====================================================
+                  Signals translation table
+	====================================================
 
     uP Config Pin   uP Pin Name   Trunk Signal   uC Port
     =============   ===========   ============   =======
@@ -353,18 +357,20 @@ microcontroller.
 
 - SYSBOOT signals are latched on rising edge of PWRONRSTn signal:
 
+- uP SYSBOOT buffers are tri-stated before and after PWRONRSTn assertion.
+
 - disable any driver connected to SYSBOOT signals for the period SYSBOOT is 
-  driven by uC; uC to use **SENn** asserted HIGH while scanning the branches
-  that use such drivers with the ADDR bus; this action shall disable these 
+  driven by uC; use **SENn** asserted HIGH while using the ADDR bus to scan
+  the branches that use such drivers; this action shall disable these 
   drivers on respective branches.
 
-- microcontroller drives the appropriate SYSBOOT configuration before driving
-  the rising edge of PWRONRSTn and releases the lines after.
+- uC drives the appropriate SYSBOOT configuration before driving the rising 
+  edge of PWRONRSTn and releases the lines after.
   
 - uC enables the drivers on branches by asserting SENn while the branches
   are scanned with the ADDR bus.
 
-**SYSBOOT signals boot configuration**
+**SYSBOOT signals configuration:**
 
     SYSBOOT.15,14	    fixed           01    == 24MHz (crystal frequency)
     SYSBOOT.13,12       fixed           00    == mandatory by specs
@@ -416,7 +422,7 @@ microcontroller.
 ***
 		
 #### 3.3.2. Branch Control Interfaces:
-**Control Circuits Diagram from Agathis Trunk Standard**
+**Control Circuits Diagram from Agathis Trunk Standard:**
 
 ![alt text](https://github.com/agathis-project/pinus-rigida/blob/master/control_circuits_diagram.png)
 
@@ -425,29 +431,44 @@ microcontroller.
 **uP Branch Control Diagram**
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_branch_control.PNG)
 
-***
-
-**uP Branch Control Diagram**
-![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_branch_control.PNG)
 
 !!!! signal name migration: **to follow Agathis Trunk Standard**:
 ENn shall change into GEn and TRG shall change into SEn.
 
-- The branch controll interface is controlled by uC in **Stand-By** state and
-  by uP in **Active** State.
+- The branch controll interface is controlled by **uC in Stand-By** state and
+  by **uP in Active** State.
 
-- INTGn, INTSn are driven by open drain FETs on branches with 10K/5K pull-ups 
+- INTGn, INTSn are driven by open drain FETs on branches with 10K and 5K 
+  pull-up resistance on root for respectivelly stand-by and active states.
   on root.
   
-- A0-2, GEn, SEn are driven by open drain drivers on uC or uP with 10K/5K 
-  pull-ups
+- A0-2, GEn, SEn are driven by uC and uP open drain drivers with respectivelly 
+  10K and 5K equivalent pull-up resistance on root.
 
-- the pull-up resistance is 10K in **Stan-By** state and 5K in **Active** state;
-  internal pull-ups (uC and uP) shall be disabled.
+- uC and uP internal pull-ups shall be disabled or reduced to weak pull-ups.
+
+- any current leakages on any of the Control Circuits shall be limited to less 
+  than the equivalent of 20K 
+
+- transistors Q4-7 implement the logic level translation between V3P3 and V1P8 
+  domain use by the uP buffers and VSB3P3 domain used by the uC and the 
+  branches.
+
+
+    Control   uC    uC       uP                   uP     uP State   uP State
+    Circuit   Port  Ball     Pin                  Ball   before     after
+                                                         PWRONRSTn	PWRONRSTn
+    =========================================================================
+    INTGn     PF2   C8       RMII1_REFCLK         H18    L          L
+    INTSn     PF1   D8       XDMA_EVENT_INTR1     D14    Z          L
+    A0        PK2   B2       MCASP0_ACLKR         B12    L          L
+    A1        PF4   D9       MCASP0_FSR           C13    L          L
+    A2        PH6   D6       MCASP0_AXR1          D13    L          L
+    GEn       PH5   C6       MCASP0_AHCLKX        A14    L          L
+    SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
+
   
-- transistors Q4-7 implement the logic level translation between V3P3 domain 
-  use by the uP to VSB3P3 used by the uC and the branches.
-
+  
   
 
 ***
