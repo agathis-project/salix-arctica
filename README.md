@@ -335,26 +335,27 @@ uP uses 3 power rails (V3P3, V1P8 and VCORE) controlled by uC
 - in order:
   1. turn off CLK_M_OSC by asserting PWRONRSTn low.
   2. turn off power rails in reverse order referenced to power-up order.
-  
-    ====================================================
-                  Signals translation table
-	====================================================
 
-    uP Config Pin   uP Pin Name   Trunk Signal   uC Port
-    =============   ===========   ============   =======
-    SYSBOOT.15	    LCD_DATA15    QC.1           PK7
-    SYSBOOT.14      LCD_DATA14    QC.0           PK6
-    SYSBOOT.13      LCD_DATA13    QB.1           PK5
-    SYSBOOT.12      LCD_DATA12    QB.0           PK4
-    SYSBOOT.7       LCD_DATA7     GPIO.11        PD5
-    SYSBOOT.6       LCD_DATA6     GPIO.10        PB3
-    SYSBOOT.5       LCD_DATA5     GPIO.9         PB7
-    SYSBOOT.4       LCD_DATA4     GPIO.8         PQ3
-    SYSBOOT.3       LCD_DATA3     GPIO.3         PD4
-    SYSBOOT.2       LCD_DATA2     GPIO.2         PB6
-    SYSBOOT.1       LCD_DATA1     GPIO.1         PB4
-    SYSBOOT.0       LCD_DATA0     GPIO.0         PC7
+```
+====================================================
+              Signals translation table
+====================================================
 
+uP Config Pin   uP Pin Name   Trunk Signal   uC Port
+=============   ===========   ============   =======
+SYSBOOT.15	    LCD_DATA15    QC.1           PK7
+SYSBOOT.14      LCD_DATA14    QC.0           PK6
+SYSBOOT.13      LCD_DATA13    QB.1           PK5
+SYSBOOT.12      LCD_DATA12    QB.0           PK4
+SYSBOOT.7       LCD_DATA7     GPIO.11        PD5
+SYSBOOT.6       LCD_DATA6     GPIO.10        PB3
+SYSBOOT.5       LCD_DATA5     GPIO.9         PB7
+SYSBOOT.4       LCD_DATA4     GPIO.8         PQ3
+SYSBOOT.3       LCD_DATA3     GPIO.3         PD4
+SYSBOOT.2       LCD_DATA2     GPIO.2         PB6
+SYSBOOT.1       LCD_DATA1     GPIO.1         PB4
+SYSBOOT.0       LCD_DATA0     GPIO.0         PC7
+```
 - SYSBOOT signals are latched on rising edge of PWRONRSTn signal:
 
 - uP SYSBOOT buffers are tri-stated before and after PWRONRSTn assertion.
@@ -372,52 +373,54 @@ uP uses 3 power rails (V3P3, V1P8 and VCORE) controlled by uC
 
 **SYSBOOT signals configuration:**
 
-    SYSBOOT.15,14	    fixed           01    == 24MHz (crystal frequency)
-    SYSBOOT.13,12       fixed           00    == mandatory by specs
-    SYSBOOT.11,10,9,8   don't care      XXXX    (not controlled by uC)
-    SYSBOOT.7,6         fixed:          00    == select MII for EMAC1
-    SYSBOOT.5	        fixed:			0     == CLK1 OUT disabled
-	SYSBOOT.4,3,2,1,0 	configurable:   00001 == UART0,_,MMC0,SPI0
-    	                                00010 == UART0,SPI0,_,_
-    	                                00011 == UART0,_,_,MMC0
-    	                                00100 == UART0,_,MMC0,_,_
-    	                                00101 == UART0,_,SPI0,_
-    	                                00110 == EMAC1,SPI0,_,_
-    	                                00111 == EMAC1,MMC0,_,_
-    	                                01000 == EMAC1,MMC0,_,_
-    	                                01001 == EMAC1,_,_,MMC0
-    	                                01010 == EMAC1,_,_SPI0
-    	                                01011 == USB0,_,SPI0,MMC0
-    	                                01100 == USB0,_,_,_
-    	                                01101 == USB0,_,_,SPI0
-    	                                01110 == RESERVED
-    	                                01111 == UART0,EMAC1,_,_
-    	                                10000 == _,UART0,EMAC1,MMC0
-    	                                10001 == _,UART0,EMAC1,MMC0
-    	                                10010 == _,_,USB0,UART0
-    	                                10011 == _,_,MMC0,UART0
-    	                                10100 == _,_,SPI0,EMAC1
-    	                                10101 == _,MMC0,EMAC1,UART0
-    	                                10110 == SPI0,MMC0,UART0,EMAC1
-    	                                10111 == MMC0,SPI0,UART0,USB0
-    	                                11000 == SPI0,MMC0,USB0,UART0
-    	                                11001 == SPI0,MMC0,EMAC1,UART0
-    	                                11010 == _,UART0,SPI0,MMC0
-    	                                11011 == _,UART0,SPI0,MMC0
-    	                                11100 == MMC1,MMC0,UART0,USB0
-    	                                11101 == RESERVED
-    	                                11110 == RESERVED
-    	                                11111 == _,EMAC1,UART0,_
+```
+SYSBOOT.15,14	    fixed           01    == 24MHz (crystal frequency)
+SYSBOOT.13,12       fixed           00    == mandatory by specs
+SYSBOOT.11,10,9,8   don't care      XXXX    (not controlled by uC)
+SYSBOOT.7,6         fixed:          00    == select MII for EMAC1
+SYSBOOT.5	        fixed:			0     == CLK1 OUT disabled
+SYSBOOT.4,3,2,1,0 	configurable:   00001 == UART0,_,MMC0,SPI0
+   	                                00010 == UART0,SPI0,_,_
+   	                                00011 == UART0,_,_,MMC0
+   	                                00100 == UART0,_,MMC0,_,_
+   	                                00101 == UART0,_,SPI0,_
+   	                                00110 == EMAC1,SPI0,_,_
+   	                                00111 == EMAC1,MMC0,_,_
+   	                                01000 == EMAC1,MMC0,_,_
+   	                                01001 == EMAC1,_,_,MMC0
+   	                                01010 == EMAC1,_,_SPI0
+   	                                01011 == USB0,_,SPI0,MMC0
+   	                                01100 == USB0,_,_,_
+   	                                01101 == USB0,_,_,SPI0
+   	                                01110 == RESERVED
+   	                                01111 == UART0,EMAC1,_,_
+   	                                10000 == _,UART0,EMAC1,MMC0
+   	                                10001 == _,UART0,EMAC1,MMC0
+   	                                10010 == _,_,USB0,UART0
+   	                                10011 == _,_,MMC0,UART0
+   	                                10100 == _,_,SPI0,EMAC1
+   	                                10101 == _,MMC0,EMAC1,UART0
+   	                                10110 == SPI0,MMC0,UART0,EMAC1
+   	                                10111 == MMC0,SPI0,UART0,USB0
+   	                                11000 == SPI0,MMC0,USB0,UART0
+   	                                11001 == SPI0,MMC0,EMAC1,UART0
+   	                                11010 == _,UART0,SPI0,MMC0
+   	                                11011 == _,UART0,SPI0,MMC0
+   	                                11100 == MMC1,MMC0,UART0,USB0
+   	                                11101 == RESERVED
+   	                                11110 == RESERVED
+   	                                11111 == _,EMAC1,UART0,_
 
-	Legend:	
-	=======
-	UART0 = uP UART0_RXD(pin18@J3) and UART0_TXD(pin17@J3) on Test Extension Card J3 Connector
-	MMC0  = uSD-Card J2 connector
-	MMC1  = eMMC U14
-	SPI0  = SPIA on trunk J1 connector
-	EMAC1 = MII1 (Ethernet Port 1) J5 RJ45 rear connector
-    USB0  = USB-OTG on external J6 connector
-	_     = unavailable device 
+Legend:	
+=======
+UART0 = uP UART0_RXD(pin18@J3) and UART0_TXD(pin17@J3) on Test Extension Card J3 Connector
+MMC0  = uSD-Card J2 connector
+MMC1  = eMMC U14
+SPI0  = SPIA on trunk J1 connector
+EMAC1 = MII1 (Ethernet Port 1) J5 RJ45 rear connector
+   USB0  = USB-OTG on external J6 connector
+_     = unavailable device 
+```
 		
 ***
 		
@@ -451,25 +454,25 @@ ENn shall change into GEn and TRG shall change into SEn.
   than the equivalent of 20K 
 
 - transistors Q4-7 implement the logic level translation between V3P3 and V1P8 
-  domain use by the uP buffers and VSB3P3 domain used by the uC and the 
-  branches.
+  domain used by the uP buffers and VSB3P3 domain used by the uC and the 
+  branches; at the same Q4-7 prevent back-feeding the uP buffers when V3P3 or 
+  V1P8 supplying the uP are powered down.
+  
+  
 
-.
-    Control   uC    uC       uP                   uP     uP State   uP State
-    Circuit   Port  Ball     Pin                  Ball   before     after
-                                                         PWRONRSTn	PWRONRSTn
-    =========================================================================
-    INTGn     PF2   C8       RMII1_REFCLK         H18    L          L
-    INTSn     PF1   D8       XDMA_EVENT_INTR1     D14    Z          L
-    A0        PK2   B2       MCASP0_ACLKR         B12    L          L
-    A1        PF4   D9       MCASP0_FSR           C13    L          L
-    A2        PH6   D6       MCASP0_AXR1          D13    L          L
-    GEn       PH5   C6       MCASP0_AHCLKX        A14    L          L
-    SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
-
-  
-  
-  
+```
+Control   uC    uC       uP                   uP     uP State   uP State
+Circuit   Port  Ball     Pin                  Ball   before     after
+                                                     PWRONRSTn	PWRONRSTn
+=========================================================================
+INTGn     PF2   C8       RMII1_REFCLK         H18    L          L
+INTSn     PF1   D8       XDMA_EVENT_INTR1     D14    Z          L
+A0        PK2   B2       MCASP0_ACLKR         B12    L          L
+A1        PF4   D9       MCASP0_FSR           C13    L          L
+A2        PH6   D6       MCASP0_AXR1          D13    L          L
+GEn       PH5   C6       MCASP0_AHCLKX        A14    L          L
+SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
+```
 
 ***
 
