@@ -251,8 +251,8 @@ located on branches.
 #### 3.2.5. VUSB Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VUSB_regulator.PNG)
 
-- **VUSB** regulator use a buck-boost converter TPS6306 that allows to operating 
-  the USB-OTG port in host mode (requires 5V).
+- **VUSB** regulator use a buck-boost converter TPS6306 that allows to operate
+  the USB-OTG port in host mode (requiring 5V).
 
 - **V3P3 and VUSB** regulators use same IC type TPS6306 and share MSYNC3M 
   signal.
@@ -261,9 +261,8 @@ located on branches.
   needs to be available for system testing to evaluate its contribution to 
   overall performance.
   
-- default: drive (uC) **MSYNC3M** with a clock signal of 2.4MHz 
-  (2.2MHz to 2.6MHz) as described in 3.2.6. to allow decreasing system noise - 
-  see 3.2.6.
+- **default: drive (uC) MSYNC3M with a 2.4MHz clock** as described in 3.2.6. 
+  to allow decreasing system noise - see 3.2.6.
 
 - drive (uC) **EN** HIGH to turn ON the regulator.
 
@@ -273,16 +272,16 @@ located on branches.
 
 
 #### 3.2.6. Lock the switching frequency for VCORE, V1P8, V3P3 and VUSB regulators:
-- VSYS power rail is shared among all root and all branches in a gateway tree; 
-  each branch that feeds from this line may introduce noise into it; this noise
-  needs to be limited; the worst offenders are the switching mode power 
+- VSYS power rail is shared among root and all branches in a gateway; 
+  each branch that feeding from this line may introduce noise into it; this 
+  noise needs to be limited; the worst offenders are the switching mode power 
   supplies.
   
 - a simple method to reduce the ripple noise is to lock the 
   switching frequency of the SMPS regulators feeding from VSYS; this can be 
   done using the uC to generate the switching frequency.
   
-- the gateway design allows to control the phase of the ripple to avoid peak 
+- the gateway design allows to control the ripple phase to avoid peak 
   overlapping:
   - each branch using the PWRCLK synchronization signal should add a 47.5ns 
     delay by using an RC circuit followed by a schmitt-trigger gate supplied 
@@ -308,15 +307,16 @@ located on branches.
 
 ### 3.3. Microprocessor
 Use [AM3356BZCZA80](http://www.ti.com/product/AM3356) by TI.
-This is an ARM Cortex A-8 32bit RISC Processor running at max 600MHz and is 
+This is an ARM Cortex A-8 32bit RISC processor running at max 600MHz and 
 specified over an extended industrial temperatures range of -40C to +105C. 
-It includes two Programmable Real-Time Units (PRUs) 32-Bit Load/Store RISC 
-processor capable of running at 200 MHz.
+It includes two Programmable Real-Time Units (PRUs) 32-Bit RISC processors
+capable of running at 200 MHz.
 
-#### 3.3.1. Power, Boot, Reset and Clocking
+#### 3.3.1. Powering, Booting and Clocking
 
-** Power-up and Power-down
-uP uses 3 power rails (V3P3, V1P8 and VCORE) controlled by uC
+**uP power, boot and reset is controlled by uC**
+
+**On board crystal connected to XTALIN and XTALOUT pins of uP is 24MHz.**
 
 **- uP power configuration:**
   - internal RTC block is disabled (use uC for RTC apps)
@@ -327,14 +327,15 @@ uP uses 3 power rails (V3P3, V1P8 and VCORE) controlled by uC
     - VDDSHV1,3,5 (root circuits)   = 1.8V by V1P8
 	- VDDSHV2,4,6 (branch circuits) = 3.3V by V3P3
   
-** Power-Up Sequence:**
+** Powering-up:**
+
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/AM335x_powerup.PNG)
-- follow the sequence in the diagram
-- timing values have a tolerance of +/-20%
-** Power-Down Sequence:**
-- in order:
-  1. turn off CLK_M_OSC by asserting PWRONRSTn low.
-  2. turn off power rails in reverse order referenced to power-up order.
+- timing values in the diagram should be taken with a tolerance of +/-20%
+- **powering-down** in reverse order.
+- ** verify 6.1.2. of ![AM335x datasheet](http://www.ti.com/lit/ds/symlink/am3356.pdf) during the root validation**
+
+
+** Booting
 
 ```
 ====================================================
@@ -358,18 +359,17 @@ SYSBOOT.0       LCD_DATA0     GPIO.0         PC7
 ```
 - SYSBOOT signals are latched on rising edge of PWRONRSTn signal:
 
-- uP SYSBOOT buffers are tri-stated before and after PWRONRSTn assertion.
+- uC disables all drivers connected to SYSBOOT signals for the period SYSBOOT 
+  lines are driven by uC; use **SENn** asserted HIGH while using the ADDR bus 
+  to scan only the branches that use such drivers; this action shall disable 
+  these drivers on respective branches; the branch design is controlled by the 
+  Agathis Trunk Standard - so, keep an eye on the standard.
 
-- disable any driver connected to SYSBOOT signals for the period SYSBOOT is 
-  driven by uC; use **SENn** asserted HIGH while using the ADDR bus to scan
-  the branches that use such drivers; this action shall disable these 
-  drivers on respective branches.
-
-- uC drives the appropriate SYSBOOT configuration before driving the rising 
-  edge of PWRONRSTn and releases the lines after.
+- uC drives the appropriate SYSBOOT configuration before driving the PWRONRSTn 
+  from LOW to HIGH and releases these lines after.
   
-- uC enables the drivers on branches by asserting SENn while the branches
-  are scanned with the ADDR bus.
+- uC enables the drivers on branches by asserting SENn while the respective 
+  branches are scanned with the ADDR bus.
 
 **SYSBOOT signals configuration:**
 
@@ -438,33 +438,29 @@ _     = unavailable device
 !!!! signal name migration: **to follow Agathis Trunk Standard**:
 ENn shall change into GEn and TRG shall change into SEn.
 
-- The branch controll interface is controlled by **uC in Stand-By** state and
-  by **uP in Active** State.
+- The branch controll interface is **controlled by uC in Stand-By state and
+  by uP in Active** State.
 
-- INTGn, INTSn are driven by open drain FETs on branches with 10K and 5K 
+- **INTGn, INTSn** are driven by open drain FETs on branches with 10K and 5K 
   pull-up resistance on root for respectivelly stand-by and active states.
   on root.
   
-- A0-2, GEn, SEn are driven by uC and uP open drain drivers with respectivelly 
-  10K and 5K equivalent pull-up resistance on root.
+- **A0-2, GEn and SEn** are driven by uC and uP open drain drivers
 
 - disable uC and uP internal pull-ups.
 
-- limit branch current leakage into control circuits to +/-10uA
-
-- limit branch current leakage sunk from control circuits to 
+- limit branch current leakage into control circuits to +/-10uA **!!!!! updated Agathis Trunk Standard for this requirement and verify pull-up resistors for worst leakage logic levels !!!!**
 
 - transistors Q4-7 implement the logic level translation between V3P3 and V1P8 
   domain used by the uP buffers and VSB3P3 domain used by the uC and the 
-  branches; at the same Q4-7 prevent back-feeding the uP buffers when V3P3 or 
-  V1P8 supplying the uP are powered down.
-  
+  branches; at the same time Q4-7 prevent back-feeding the uP buffers when 
+  V3P3 or V1P8 supplying the uP are down.
   
 
 ```
                                                      uP State   uP State
 Control   uC    uC       uP                   uP     before     after
-Circuit   Port  Ball     Pin                  Ball   PWRONRSTn	PWRONRSTn
+Circuit   Port  Ball     Pin Name             Ball   PWRONRSTn	PWRONRSTn
 =========================================================================
 INTGn     PF2   C8       RMII1_REFCLK         H18    L          L
 INTSn     PF1   D8       XDMA_EVENT_INTR1     D14    Z          L
@@ -482,10 +478,10 @@ SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
 
 ##### 3.3.3.1. SPI.A,B
 
-- SPIA and SPIB are respectivelly SPI0 and SPI1
+- SPIA and SPIB on trunk connector are respectivelly SPI0 and SPI1 of uP AM335x
  
 - as they propagate up the trunk, the SPIA and SPIB are swapped on every 
-  branch that use SPI; this ensures a balanced loading of both channels: 
+  branch that use SPI; this ensures a balanced loading of both channels.
 
 - a branch may use one or both SPI
 
@@ -497,26 +493,9 @@ SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
 ```
 miso ---> SPI*.D0
 mosi ---> SPI*.D1
-
-- SPIx.CSn is CS0 of uP
-
-- the root can boot from an SPI device on first branch connected to SPIA: 
-```
-the boot pin allocation is:
-
-=====================================
-SPI                 uP         uP
-device   trunk      Pin        Ball
-signal   circuit    Name       Number
-=====================================
-cs       SPIA.CSn   SPI0_CS0   A16
-miso     SPIA.D0    SPI0_D0    B17
-mosi     SPIA.D1    SPI0_D1    B16
-clk      SPIA.SCLK  SPI0_SCLK  A17
 ```
 
-- the recommended .D0 and .D1 general allocation is to follow the boot pin 
-  allocation convention
+- the root can boot from SPI device on first branch connected to SPIA.
 
 
 ```  
