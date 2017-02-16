@@ -448,10 +448,11 @@ ENn shall change into GEn and TRG shall change into SEn.
 - A0-2, GEn, SEn are driven by uC and uP open drain drivers with respectivelly 
   10K and 5K equivalent pull-up resistance on root.
 
-- uC and uP internal pull-ups shall be disabled or reduced to weak pull-ups.
+- disable uC and uP internal pull-ups.
 
-- any current leakages on any of the Control Circuits shall be limited to less 
-  than the equivalent of 20K 
+- limit branch current leakage into control circuits to +/-10uA
+
+- limit branch current leakage sunk from control circuits to 
 
 - transistors Q4-7 implement the logic level translation between V3P3 and V1P8 
   domain used by the uP buffers and VSB3P3 domain used by the uC and the 
@@ -461,9 +462,9 @@ ENn shall change into GEn and TRG shall change into SEn.
   
 
 ```
-Control   uC    uC       uP                   uP     uP State   uP State
-Circuit   Port  Ball     Pin                  Ball   before     after
-                                                     PWRONRSTn	PWRONRSTn
+                                                     uP State   uP State
+Control   uC    uC       uP                   uP     before     after
+Circuit   Port  Ball     Pin                  Ball   PWRONRSTn	PWRONRSTn
 =========================================================================
 INTGn     PF2   C8       RMII1_REFCLK         H18    L          L
 INTSn     PF1   D8       XDMA_EVENT_INTR1     D14    Z          L
@@ -479,6 +480,112 @@ SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
 #### 3.3.3. Branch Data Interfaces:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_trunk_data_circuits.PNG)
 
+##### 3.3.3.1. SPI.A,B
+
+- SPIA and SPIB are respectivelly SPI0 and SPI1
+ 
+- as they propagate up the trunk, the SPIA and SPIB are swapped on every 
+  branch that use SPI; this ensures a balanced loading of both channels: 
+
+- a branch may use one or both SPI
+
+- if a branch use only one SPI, that is SPIA
+
+- SPIx.D0 and SPIx.D1 can be configured by uP as either *miso* or *mosi*; 
+  recommended allocation:
+
+```
+miso ---> SPI*.D0
+mosi ---> SPI*.D1
+
+- SPIx.CSn is CS0 of uP
+
+- the root can boot from an SPI device on first branch connected to SPIA: 
+```
+the boot pin allocation is:
+
+=====================================
+SPI                 uP         uP
+device   trunk      Pin        Ball
+signal   circuit    Name       Number
+=====================================
+cs       SPIA.CSn   SPI0_CS0   A16
+miso     SPIA.D0    SPI0_D0    B17
+mosi     SPIA.D1    SPI0_D1    B16
+clk      SPIA.SCLK  SPI0_SCLK  A17
+```
+
+- the recommended .D0 and .D1 general allocation is to follow the boot pin 
+  allocation convention
+
+
+```  
+SPI signal allocation table
+============================================
+           uP            uP          uP
+trunk      Pin           Signal      Ball  
+circuit    Name          Name        Number  
+============================================ 
+SPIA.CSn   SPI0_CS0      spi0_cs0    A16  
+SPIA.D0    SPI0_D0       spi0_d0     B17  
+SPIA.D1    SPI0_D1       spi0_d1     B16  
+SPIA.SCLK  SPI0_SCLK     spi0_sclk   A17  
+--------------------------------------------
+SPIB.CSn   MCASP0_AHCLKR spi0_cs0    C12  
+SPIB.D0    MCASP0_FSX    spi0_d0     B13
+SPIB.D1    MCASP0_AXR0   spi0_d1     D12  
+SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13  
+```
+
+
+##### 3.3.3.2. Q.A,B,C,D
+
+- Q.A,B,C,D are four quads - four groups of 4 uP signals chosen for system 
+flexibility;
+
+- each quad is one allocation unit; unused signals in one quad cannot be 
+  re-allocated; 
+ 
+- point to point communication; root to one branch.
+
+- branch/trunk routing is controlled by the Agathis Trunk Standard
+
+- notable allocations possible for QA: 
+  - uart1 (rxd,txd)
+  - uart1 (rxd,txd,ctsn,rtsn)
+  - dcan0 (rx,tx) 
+  - dcan1 (rx,tx)
+  - i2c1  (sda,scl)
+  - i2c2  (sda,scl)  
+  - pr1_uart0 (rxd,txd)
+  - pr1_uart0 (rxd,txd,ctsn,rtsn)
+  - gpio
+
+- notable allocations possible for QB: 
+  - uart4 (rxd,txd)
+  - uart4 (rxd,txd,ctsn,rtsn)
+  - i2c1  (sda,scl)
+  - dcan1 (rx,tx)
+  - gpio
+
+- notable allocations possible for QC: 
+  - uart5 (rxd,txd)
+  - uart5 (rxd,txd,ctsn,rtsn)
+  - gpio
+
+- notable allocations possible for QD: 
+  - uart3 (rxd,txd)
+  - uart3 (rxd,txd,ctsn,rtsn)
+  - gpio
+  
+- denominator allocations for QA,B,C,D are respectivelly uart1,4,5,3
+
+  
+
+##### 3.3.3.3. SDIO
+##### 3.3.3.4. GPIO.[0..11]
+##### 3.3.3.5. I2C
+##### 3.3.3.1. USB.A,B,C,D
 
 ***
 
