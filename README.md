@@ -435,12 +435,20 @@ _     = unavailable device
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_branch_control.PNG)
 
 
+***
+
+**uC Branch Control Diagram**
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_branch_control.PNG)
+
+
 !!!! signal name migration: **to follow Agathis Trunk Standard**:
 ENn shall change into GEn and TRG shall change into SEn.
 
-- The branch controll interface is **controlled by uC in Stand-By state and
+- The branch control interface is **controlled by uC in Stand-By state and
   by uP in Active** State.
-
+  
+- The branch control interface buffers are supplied from VSB3P3 rail.
+  
 - **INTGn, INTSn** are driven by open drain FETs on branches with 10K and 5K 
   pull-up resistance on root for respectivelly stand-by and active states.
   on root.
@@ -476,10 +484,14 @@ SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
 #### 3.3.3. Branch Data Interfaces:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_trunk_data_circuits.PNG)
 
+- all data interface buffers are supplied from V3P3 rail.
+
 ##### 3.3.3.1. SPI.A,B
 
 - SPIA and SPIB on trunk connector are respectivelly SPI0 and SPI1 of uP AM335x
- 
+
+- SPI on root is allways master
+
 - as they propagate up the trunk, the SPIA and SPIB are swapped on every 
   branch that use SPI; this ensures a balanced loading of both channels.
 
@@ -520,15 +532,19 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 ##### 3.3.3.2. Q.A,B,C,D
 
 - Q.A,B,C,D are four quads - four groups of 4 uP signals chosen for system 
-flexibility;
+flexibility
 
-- each quad is one allocation unit; unused signals in one quad cannot be 
-  re-allocated; 
+- each quad is one allocation unit; unused signals in a quad allocated to a
+  a branch cannot be re-allocated to another branch.
  
-- point to point communication; root to one branch.
+- point to point communication; root to one branch
 
-- branch/trunk routing is controlled by the Agathis Trunk Standard
+- branch/trunk routing is controlled by the Agathis Trunk Standard to maximize
+  design flexibility, scalability and availabililty.
 
+- interface configuration is detailed by the AM335x datasheet, manual and pin 
+  mux utility tool.
+  
 - notable allocations possible for QA: 
   - uart1 (rxd,txd)
   - uart1 (rxd,txd,ctsn,rtsn)
@@ -557,7 +573,7 @@ flexibility;
   - uart3 (rxd,txd,ctsn,rtsn)
   - gpio
   
-- denominator allocations for QA,B,C,D are respectivelly uart1,4,5,3
+- **common denominator allocations for QA,B,C,D are respectivelly uart1,4,5,3**
 
   
 
