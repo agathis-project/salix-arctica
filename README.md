@@ -27,14 +27,14 @@ located on branches.
   physical layer interfaces such us: UART, SPI, I2C, SDIO, USB and the ubiquitous 
   GPIO.
 
-- Altough today's microprocessors have these interfaces available for embedded 
+- Although today's microprocessors have these interfaces available for embedded 
   applications, there is no architecture supporting a modular scalable construction.
 
 - A large number of things located in uncontrolled environments; they need to 
   deal with the scarcity of power supply, harsh electrical and mechanical 
-  conditions, wide temperature and humidity ranges and corrosive athmosphere.
+  conditions, wide temperature and humidity ranges and corrosive atmosphere.
 
-- Practically, there is no open scallable gateway designed to interface with 
+- Practically, there is no open scalable gateway designed to interface with 
   things in these environments.
   
 - Current solutions to interface with things in un-controlled environments use 
@@ -104,10 +104,10 @@ located on branches.
 
 - **the Gateway must be seen as a battery operated system with opportunistic 
   access to other power sources.** This perspective helps design a power 
-  efficient gateway with extendend availability.
+  efficient gateway with extended availability.
 
 - uC and uP must be programmed for lowest system power consumption; such us:
-  turn off the christmas lights - nobody is watching anyway; the battery life
+  turn off the Christmas lights - nobody is watching anyway; the battery life
   time is far more precious.
   
 - hardware power states: 
@@ -139,7 +139,7 @@ located on branches.
 - The gateway is supplied by the power module which adapts the **DC input** 
   power to feed the **VSYS** rail or to charge a **back-up battery**.
 
-- **VSYS** serves as bulk power distributed to the entired gateway.
+- **VSYS** serves as bulk power distributed to the entire gateway.
   
 - **VSYS** can be sourced by an optional *Power over Ethernet* block installed
   on the power module; this PoE block is wired to the Ethernet magnetics on 
@@ -447,10 +447,10 @@ ENn shall change into GEn and TRG shall change into SEn.
 - The branch control interface is **controlled by uC in Stand-By state and
   by uP in Active** State.
   
-- The branch control interface buffers are supplied from VSB3P3 rail.
+- The branch control interface buffers are supplied from **VSB3P3** rail.
   
 - **INTGn, INTSn** are driven by open drain FETs on branches with 10K and 5K 
-  pull-up resistance on root for respectivelly stand-by and active states.
+  pull-up resistance on root for respectively stand-by and active states.
   on root.
   
 - **A0-2, GEn and SEn** are driven by uC and uP open drain drivers
@@ -484,20 +484,23 @@ SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
 #### 3.3.3. Branch Data Interfaces:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_trunk_data_circuits.PNG)
 
-- all data interface buffers are supplied from V3P3 rail.
+** all data interface buffers (uP and branches) are supplied from V3P3 rail**
 
 ##### 3.3.3.1. SPI.A,B
 
-- SPIA and SPIB on trunk connector are respectivelly SPI0 and SPI1 of uP AM335x
+- SPIA and SPIB on trunk connector are respectively SPI0 and SPI1 of uP AM335x
 
-- SPI on root is allways master
+- SPI on root is always master
 
 - as they propagate up the trunk, the SPIA and SPIB are swapped on every 
   branch that use SPI; this ensures a balanced loading of both channels.
 
-- a branch may use one or both SPI
+- if a branch use one SPI, it shall connect to SPIA
 
-- if a branch use only one SPI, that is SPIA
+- if a branch use two SPI, it shall take SPIA and SPIB
+
+- a branch cannot connect more than one load to SPIA respectively SPIB
+
 
 - SPIx.D0 and SPIx.D1 can be configured by uP as either *miso* or *mosi*; 
   recommended allocation:
@@ -573,7 +576,7 @@ flexibility
   - uart3 (rxd,txd,ctsn,rtsn)
   - gpio
   
-- **common denominator allocations for QA,B,C,D are respectivelly uart1,4,5,3**
+- **common denominator allocations for QA,B,C,D are respectively uart1,4,5,3**
 
   
 
