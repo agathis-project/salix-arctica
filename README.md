@@ -484,7 +484,7 @@ SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
 #### 3.3.3. Branch Data Interfaces:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_trunk_data_circuits.PNG)
 
-** all data interface buffers (uP and branches) are supplied from V3P3 rail**
+**all data interface buffers (uP and branches) are supplied from V3P3 rail**
 
 ##### 3.3.3.1. SPI.A,B
 
