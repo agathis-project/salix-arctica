@@ -534,21 +534,20 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 
 ##### 3.3.3.2. Q.A,B,C,D
 
-- Q.A,B,C,D are four quads - four groups of 4 uP signals chosen for system 
-flexibility
+- Q.A,B,C,D are four quads - 4 groups of 4 uP signals
 
 - each quad is one allocation unit; unused signals in a quad allocated to a
   a branch cannot be re-allocated to another branch.
  
-- point to point communication; root to one branch
+- the standard quads provide point to point communication: root to one branch
 
-- branch/trunk routing is controlled by the Agathis Trunk Standard to maximize
+- quad branch routing is controlled by the Agathis Trunk Standard to maximize
   design flexibility, scalability and availabililty.
 
-- interface configuration is detailed by the AM335x datasheet, manual and pin 
-  mux utility tool.
+- intra quad configuration is detailed by the AM335x datasheet, manual and 
+  pinmux utility tool.
   
-- notable allocations possible for QA: 
+- notable allocations for QA: 
   - uart1 (rxd,txd)
   - uart1 (rxd,txd,ctsn,rtsn)
   - dcan0 (rx,tx) 
@@ -559,30 +558,55 @@ flexibility
   - pr1_uart0 (rxd,txd,ctsn,rtsn)
   - gpio
 
-- notable allocations possible for QB: 
+- notable allocations for QB: 
   - uart4 (rxd,txd)
   - uart4 (rxd,txd,ctsn,rtsn)
   - i2c1  (sda,scl)
   - dcan1 (rx,tx)
   - gpio
 
-- notable allocations possible for QC: 
+- notable allocations for QC: 
   - uart5 (rxd,txd)
   - uart5 (rxd,txd,ctsn,rtsn)
   - gpio
 
-- notable allocations possible for QD: 
+- notable allocations for QD: 
   - uart3 (rxd,txd)
   - uart3 (rxd,txd,ctsn,rtsn)
   - gpio
   
-- **common denominator allocations for QA,B,C,D are respectively uart1,4,5,3**
-
-  
+- **recommended allocations for QA,B,C,D are respectively uart1,4,5,3**
 
 ##### 3.3.3.3. SDIO
+
+- notable allocations for SDIO circuits:
+  - SDIO  (complies with MMC4.3, SD, SDIO 2.0 Specifications)
+  - gpio1 (ARM)
+  - pr1_* ((programmable real time unit subsystem))
+
+- **recommended allocation for SDIO is SDIO**
+
 ##### 3.3.3.4. GPIO.[0..11]
+
+- this interface supports 12 general purpose IO signals.
+
+- in normal configurations, the GPIOs are allocated to branches on individual 
+  basis, in a point to point connection.
+
+- uP determines the overal connectivity map from the branch descriptors stored 
+  in the branch id eeprom.
+  
+- notable allocations for GPIO[0..11]
+ - pr1_pru1_pru_r30_* (programmable real time unit subsystem)
+ - pr1_pru1_pru_r31_* (programmable real time unit subsystem)
+ - gpio2_* (ARM)
+ - lcd_data[0..7],lcd_hsync, lcd_vsync, lcd_pclk, lcd_ac_bias_en (raster controller for monochrome and color STN displays)
+
+
 ##### 3.3.3.5. I2C
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_i2c.PNG)
+
+
 ##### 3.3.3.1. USB.A,B,C,D
 
 ***
@@ -592,6 +616,20 @@ flexibility
 
 #### 3.3.5. LPDDR Memory:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_LPDDR.PNG)
+
+- The root to module uses a MT46H128M16LFDD LPDDR (mDDR) 128M x 16 manufactured by 
+  Micron; this memory was chosen for its low power consumption, especially for
+  the low power consumption during self-refresh mode; the main criteria being 
+  *what the memory is consuming when the system is doing nothing.
+
+- The second major criteria for RAM selection was the capability to run a major
+  Linux distro, like Debian; 256MB offered by MT46H128M16LFDD was considered 
+  appropriate given the intended system usage.
+  
+- This memory is organized as 128M words of 16 bit.
+
+- The routing of DDR signals follow the AM335x datasheet recommendations.
+
 
 ***
 
