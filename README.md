@@ -611,22 +611,20 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 
 - I2C-TRUNK root circuit is compliant with Agathis Trunk Standard. 
 
-- I2C-TRUNK facilitates uP access as master to: 
+- I2C-TRUNK connects uP as master to: 
   - card id eeprom installed on root and branches
-  - uC as slave
+  - uC
   - i2c devices installed on branches
 
 - uC and card id eeprom are supplied from VSB3P3 rail which is always ON; 
   this allows uC access to the eeprom when V3P3 is down.
 
 - level translation and power down separation between uC and uP sides of the 
-  I2C TRUNK bus is implemented with Q2A,B MOSFET.
+  I2C-TRUNK is implemented with Q2A,B MOSFET.
   
-- I2C-TRUNK pull-up in stand-by mode (uC and eeprom) is 10K.
-
 - I2C-TRUNK root pull-up is:
-  - 5K in active mode.
-  - 10K in stand-by.
+  - 6.67K in active mode.
+  - 20K in stand-by.
 
 - I2C-TRUNK root maximum parasitic capacitance is 4pF (uP) + 8pF (eeprom) + 
   10pF (uC) +  25pF (PCB) + 5pF (connector) for a total of 52pF; 
@@ -654,7 +652,19 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 - the number of identical i2c devices in a gateway (I2C-TRUNK) is limited to 
   two to the power of the number of device address pins connected to KNOT.0,1,2; 
   these devices shall be on branches installed in a contiguous block in the 
-  gateway.
+  gateway:
+  - if A0,1,2 address bits are exposed and connected respectivelly to 
+    KNOT.0,1,2 then 8 modules with identical i2c devices (one each) can be used;
+    this is the particular case of the card id eeprom; other i2c with same access
+    to A2,A1,A0 address bits lead to same maximized usability.
+  - if only A0,1 address bits are exposed and connected respectivelly to 
+    KNOT.0,1 then 4 branches with identical i2c devices (one each) can be used;
+    these branches need to be installed in a contiguous block in the gateway.
+  - if only A0 address bit is exposed and connected to KNOT.0, then 2 branches
+    with identical i2c device (one each) can be used; these branches need to be 
+    installed in a contiguous block in the gateway.
+  - if no address bit is exposed and connected to KNOT, then only one such
+    branch per gateway is allowed.
 
 ``` 
 I2C-TRUNK signal allocation table
@@ -680,7 +690,8 @@ SDA     PC0     H6     I2C0_SDA   C17
 
 - the devices connected directly to these USB ports must be permanently 
   attached (embedded); if these ports need to exit the gateway to external 
-  devices, then use a hub on that branch.
+  devices, then use a hub on that branch connected up-stream to USB.A and 
+  connect the down-stream ports to the external world.
 
 
 ***
@@ -688,25 +699,52 @@ SDA     PC0     H6     I2C0_SDA   C17
 #### 3.3.5. LPDDR Memory:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_LPDDR.PNG)
 
-- The root to module uses a MT46H128M16LFDD LPDDR (mDDR) 128M x 16 manufactured by 
-  Micron; this memory was chosen for its low power consumption, especially for
-  the low power consumption during self-refresh mode; the main criteria being 
-  *what the memory is consuming when the system is doing nothing.
+- main RAM selection contraints:
+  - supported by up AM335x
+  - lowest self-refresh current consumption
+  - large enough to run a Linux major distribution
 
-- The second major criteria for RAM selection was the capability to run a major
-  Linux distro, like Debian; 256MB offered by MT46H128M16LFDD was considered 
-  appropriate given the intended system usage.
-  
-- This memory is organized as 128M words of 16 bit.
+- use MT46H128M16LFDD LPDDR (mDDR) 128M x 16 (256MB) manufactured by Micron; 
 
 - The routing of DDR signals follow the AM335x datasheet recommendations.
-
 
 ***
 
 #### 3.3.6. eMMC and SD-Card Memories:
-![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_emmc_sdcard.PNG)
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/emmc_sdcard.PNG)
+
+- the eMMC memory is a 8GB flash MTFC8GACAANA-4M IT by Micron; it integrates a 
+  MultiMediaCard and NAND Flash in a 100-Ball package:
+
+  - connected to port mmc1 on AM3356 uP using 1.8V signaling interface.
+  
+  - use SYSBOOT[4:0] = 11100 to boot from eMMC.
+  
+  - the device is operated from V3P3 and V1P8; the power supply is turned off 
+    by cutting the VSS and VSSQ lines; assert EN-eMMC signal HIGH to turn-on 
+	the power.
+  
+  - the hardware reset is not used - use power-up and software reset instead.
+  
+  - AM335x microprocessors support MMC4.3; later versions of the MMC standard 
+    are backwards compatible; virtually any eMMC memory in 100Ball package 
+	should fit the design.
+	
+  - transfer speed up to 48MByte/s
+  
+- the SD-Card memory use a hinge micro-SD card socket and any uSD card should fit the bill
+  
+  - connected to port mmc0 on AM3356 uP using 3.3V signaling interface.
+  
+  - the device is operated from V3P3; the power supply is turned off by cutting 
+    the VSS line; assert EN-SDCARD signal HIGH to turn-on the power.
+	
+  - see "SYSBOOT configuration" chapter for booting options.
+  
+  - transfer speed in boot mode: 10MHz or up to 20MByte/s 
+  
+  - transfer speed in normal operation: up to 24MByte/s
+  
 
 ***
 
