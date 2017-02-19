@@ -61,17 +61,18 @@ located on branches.
 
 #### 3.1. Design goals and overall constraints and requirements:
 
-- operational environmental temperature range at 0W internal power dissipation -40C to 85C.
+- operational environmental temperature range at zero internal power 
+  dissipation: -40C to 85C.
   - this is achieved by using components with maximum operational temperature 
     of 85C.
 
-- operational environmental temperature range at maximum performance power dissipation -40C to 75C.
+- operational environmental temperature range at maximum performance power 
+  dissipation: -40C to 75C:
   - internal power dissipation increases device temperature; for the entire 
     module to achieve 85C maximum temperature, the devices running hot should 
     have higher maximum operational temperature.
 
-- strong preference for devices with full datasheet and free support; NDA
-  is not an option.
+- strong preference for devices with full datasheet and free support.
 
 - root size excluding connectors - square, side less than 85mm
 
@@ -486,6 +487,8 @@ SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
 
 **all data interface buffers (uP and branches) are supplied from V3P3 rail**
 
+
+
 ##### 3.3.3.1. SPI.A,B
 
 - SPIA and SPIB on trunk connector are respectively SPI0 and SPI1 of uP AM335x
@@ -501,7 +504,6 @@ SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
 
 - a branch cannot connect more than one load to SPIA respectively SPIB
 
-
 - SPIx.D0 and SPIx.D1 can be configured by uP as either *miso* or *mosi*; 
   recommended allocation:
 
@@ -511,7 +513,6 @@ mosi ---> SPI*.D1
 ```
 
 - the root can boot from SPI device on first branch connected to SPIA.
-
 
 ```  
 SPI signal allocation table
@@ -577,14 +578,16 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   
 - **recommended allocations for QA,B,C,D are respectively uart1,4,5,3**
 
+
 ##### 3.3.3.3. SDIO
 
-- notable allocations for SDIO circuits:
+- notable allocations for SDIO signals:
   - SDIO  (complies with MMC4.3, SD, SDIO 2.0 Specifications)
   - gpio1 (ARM)
   - pr1_* ((programmable real time unit subsystem))
 
 - **recommended allocation for SDIO is SDIO**
+
 
 ##### 3.3.3.4. GPIO.[0..11]
 
@@ -603,16 +606,84 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
  - lcd_data[0..7],lcd_hsync, lcd_vsync, lcd_pclk, lcd_ac_bias_en (raster controller for monochrome and color STN displays)
 
 
-##### 3.3.3.5. I2C
+##### 3.3.3.5. I2C-TRUNK
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_i2c.PNG)
 
+- I2C-TRUNK root circuit is compliant with Agathis Trunk Standard. 
 
-##### 3.3.3.1. USB.A,B,C,D
+- I2C-TRUNK facilitates uP access as master to: 
+  - card id eeprom installed on root and branches
+  - uC as slave
+  - i2c devices installed on branches
+
+- uC and card id eeprom are supplied from VSB3P3 rail which is always ON; 
+  this allows uC access to the eeprom when V3P3 is down.
+
+- level translation and power down separation between uC and uP sides of the 
+  I2C TRUNK bus is implemented with Q2A,B MOSFET.
+  
+- I2C-TRUNK pull-up in stand-by mode (uC and eeprom) is 10K.
+
+- I2C-TRUNK root pull-up is:
+  - 5K in active mode.
+  - 10K in stand-by.
+
+- I2C-TRUNK root maximum parasitic capacitance is 4pF (uP) + 8pF (eeprom) + 
+  10pF (uC) +  25pF (PCB) + 5pF (connector) for a total of 52pF; 
+  - this parasitic capacitance requires a maximum pull-up resistance of 
+    352K/52 = 6.77K; this resistance is build using one 10K resistor on uP side 
+	and 20K on uC side.
+  - the root parasitic capacitance must be declared in root id eeprom hw 
+  descriptors.
+  - the PCB parasitic capacitance is a major contributor and needs to be 
+  qualified during root hardware validation (measure the PCB parasitic 
+  capacitance against GND plane).
+  
+
+- maximum gateway total parasitic capacitance cannot exceed 352pF, as this 
+  capacitance requires 1K equivalent pull-up which is the lowest an i2c 
+  fast-mode capable drive can drive without exceeding the standard minimum 
+  logic level.
+  
+- I2C-TRUNK root leakage current is 18uA (uP) + 2uA (eeprom) + 10uA (uC) for a 
+  total of 30uA; this current will cause a maximum 0.2V voltage drop on 6.77K 
+  pull-up resistance, which will lead to a VIH = V3P3min - 0.2V = 3V which is 
+  higher than VIHmin = 0.7 x V3P3min = 2.24V with a margin of 0.76V.
+  - the root max leakage must be declared in root id eeprom hw descriptors.
+  
+- the number of identical i2c devices in a gateway (I2C-TRUNK) is limited to 
+  two to the power of the number of device address pins connected to KNOT.0,1,2; 
+  these devices shall be on branches installed in a contiguous block in the 
+  gateway.
+
+``` 
+I2C-TRUNK signal allocation table
+
+                                           
+I2C     uC      uC     uP         uP     
+TRUNK   Port    Ball   Pin Name   Ball   
+=======================================
+SCL     PC1     G6     I2C0_SCL   C16
+SDA     PC0     H6     I2C0_SDA   C17
+ 
+```
+
+##### 3.3.3.6. USB.A,B,C,D
+
+- these four USB device ports are USB2.0 and they are controlled by an USB hub 
+  [USB2514B](http://www.microchip.com/wwwproducts/en/USB2514B) connected 
+  up-stream to USB1 port of uP AM3356.
+
+- the power delivery to the USB devices is controlled through USBdPWR[1..4] 
+  signals that drive local USB power switches - intended to reduce power 
+  consumption while not in use.
+
+- the devices connected directly to these USB ports must be permanently 
+  attached (embedded); if these ports need to exit the gateway to external 
+  devices, then use a hub on that branch.
+
 
 ***
-
-#### 3.3.4. Branch USB Interfaces
-
 
 #### 3.3.5. LPDDR Memory:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_LPDDR.PNG)
@@ -655,7 +726,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 #### 3.4.1. Power, Reset and Clocking
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_power.PNG)
 
-#### 3.4.2. Root ID Eeprom
+#### 3.4.2. # Root ID Eeprom
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_card_id_eeprom.PNG)
 
 #### 3.4.3. VBUS Host Voltage Doubler
