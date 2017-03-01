@@ -595,6 +595,9 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 
 - in normal configurations, the GPIOs are allocated to branches on individual 
   basis, in a point to point connection.
+  
+- unused GPIOs are wired directly, in order, one by one, from down-trunk 
+  connector to first GPIOs pins on up-trunk connector.
 
 - uP determines the overal connectivity map from the branch descriptors stored 
   in the branch id eeprom.
@@ -603,7 +606,8 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
  - pr1_pru1_pru_r30_* (programmable real time unit subsystem)
  - pr1_pru1_pru_r31_* (programmable real time unit subsystem)
  - gpio2_* (ARM)
- - lcd_data[0..7],lcd_hsync, lcd_vsync, lcd_pclk, lcd_ac_bias_en (raster controller for monochrome and color STN displays)
+ - lcd_data[0..7],lcd_hsync, lcd_vsync, lcd_pclk, lcd_ac_bias_en (raster 
+   controller for monochrome and color STN displays)
 
 
 ##### 3.3.3.5. I2C-TRUNK
@@ -611,7 +615,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 
 - I2C-TRUNK root circuit is compliant with Agathis Trunk Standard. 
 
-- I2C-TRUNK connects uP as master to: 
+- I2C-TRUNK connects uP as master for: 
   - card id eeprom installed on root and branches
   - uC
   - i2c devices installed on branches
@@ -620,7 +624,10 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   this allows uC access to the eeprom when V3P3 is down.
 
 - level translation and power down separation between uC and uP sides of the 
-  I2C-TRUNK is implemented with Q2A,B MOSFET.
+  I2C-TRUNK is implemented with Q2A,B MOSFET:
+   - I2C signals on either side is pulled high by their respective pull-ups.
+   - I2C signals on either side cannot exceed their respective pull-up as the
+     MOSFET is turned off when the channel voltage is VSB3P3 or higher.   
   
 - I2C-TRUNK root pull-up is:
   - 6.67K in active mode.
@@ -701,7 +708,7 @@ SDA     PC0     H6     I2C0_SDA   C17
 
 - main RAM selection contraints:
   - supported by up AM335x
-  - lowest self-refresh current consumption
+  - low self-refresh current consumption
   - large enough to run a Linux major distribution
 
 - use MT46H128M16LFDD LPDDR (mDDR) 128M x 16 (256MB) manufactured by Micron; 
@@ -713,16 +720,17 @@ SDA     PC0     H6     I2C0_SDA   C17
 #### 3.3.6. eMMC and SD-Card Memories:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/emmc_sdcard.PNG)
 
-- the eMMC memory is a 8GB flash MTFC8GACAANA-4M IT by Micron; it integrates a 
-  MultiMediaCard and NAND Flash in a 100-Ball package:
+- the **eMMC memory** is a 8GB flash MTFC8GACAANA-4M IT by Micron; it 
+  integrates a MultiMediaCard and NAND Flash in a 100-Ball package:
 
   - connected to port mmc1 on AM3356 uP using 1.8V signaling interface.
   
   - use SYSBOOT[4:0] = 11100 to boot from eMMC.
   
   - the device is operated from V3P3 and V1P8; the power supply is turned off 
-    by cutting the VSS and VSSQ lines; assert EN-eMMC signal HIGH to turn-on 
-	the power.
+    by cutting the VSS and VSSQ lines.
+	
+  - assert EN-eMMC (uC port PJ1, ball# D5) HIGH to turn-on the power.
   
   - the hardware reset is not used - use power-up and software reset instead.
   
@@ -730,18 +738,21 @@ SDA     PC0     H6     I2C0_SDA   C17
     are backwards compatible; virtually any eMMC memory in 100Ball package 
 	should fit the design.
 	
-  - transfer speed up to 48MByte/s
+  - transfer speed up to 48MByte/s.
   
-- the SD-Card memory use a hinge micro-SD card socket and any uSD card should fit the bill
+- the **SD-Card memory** use a hinge micro-SD card socket; any uSD card that 
+  meet the speed specified below should fit:
   
   - connected to port mmc0 on AM3356 uP using 3.3V signaling interface.
   
   - the device is operated from V3P3; the power supply is turned off by cutting 
-    the VSS line; assert EN-SDCARD signal HIGH to turn-on the power.
+    the VSS line.
+
+  -	assert EN-SDCARD (uC port PE6, ball# E7) HIGH to turn-on the power.
 	
   - see "SYSBOOT configuration" chapter for booting options.
   
-  - transfer speed in boot mode: 10MHz or up to 20MByte/s 
+  - transfer speed in boot mode: 10MHz or up to 5MByte/s 
   
   - transfer speed in normal operation: up to 24MByte/s
   
@@ -751,6 +762,20 @@ SDA     PC0     H6     I2C0_SDA   C17
 #### 3.3.7. Ethernet:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_mii.PNG)
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/eth_phy.PNG)
+
+- the Ethernet feature of the root module is implemented with a 3-port Ethernet 
+  switch inside AM3356 with one port connected, internally, to the 
+  system side and two ports connected to the external LAN connectors through 
+  two Phy transceivers KSZ8091MNX by Microchip/Micrel using MII interfaces of 
+  AM3356.
+
+- support 10/100Base-T.
+  
+- the two Ethernet ports support PoE+; the power is separated by the LAN 
+  transformers and connected to the power module through connectors J? and J?+1. 
+
+- to implement EEE directive the TXER, TXEN and TXD must be controlled by SW;
+  the MAC of AM3356 does not support EEE.
 
 
 ***
@@ -785,13 +810,6 @@ SDA     PC0     H6     I2C0_SDA   C17
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/Crypto_auth.PNG)
 
 ***
-
-
-
-
-
-
-
 
 
 
