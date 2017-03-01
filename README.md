@@ -315,28 +315,29 @@ capable of running at 200 MHz.
 
 #### 3.3.1. Powering, Booting and Clocking
 
-**uP power, boot and reset is controlled by uC**
+- uP power, boot and reset are controlled by uC.
 
-**On board crystal connected to XTALIN and XTALOUT pins of uP is 24MHz.**
-
-**- uP power configuration:**
-  - internal RTC block is disabled (use uC for RTC apps)
-  - internal RTC LDO regulator is disabled
+- uP power configuration:
+  - internal RTC block is disabled (use uC for RTC apps).
+  - internal RTC LDO regulator is disabled.
   - VDD_CORE and VDD_MPU are supplied from VCORE rail while all other internal 
     blocks are supplied from V1P8 rail.
   - IO buffers voltages are supplied from V3P3 and V1P8 rails as follows:
     - VDDSHV1,3,5 (root circuits)   = 1.8V by V1P8
 	- VDDSHV2,4,6 (branch circuits) = 3.3V by V3P3
-  
-** Powering-up:**
+
+##### Power-up:
 
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/AM335x_powerup.PNG)
-- timing values in the diagram should be taken with a tolerance of +/-20%
-- **powering-down** in reverse order.
-- ** verify 6.1.2. of ![AM335x datasheet](http://www.ti.com/lit/ds/symlink/am3356.pdf) during the root validation**
+- take timing values in the diagram with +/-20% tolerance.
+- power-down in reverse order.
+- verify 6.1.2. of ![AM335x datasheet](http://www.ti.com/lit/ds/symlink/am3356.pdf) during the root validation
 
+##### Clocking:
 
-** Booting
+- On board crystal connected to XTALIN and XTALOUT pins of uP is 24MHz.
+
+##### Booting
 
 ```
 ====================================================
@@ -359,18 +360,16 @@ SYSBOOT.1       LCD_DATA1     GPIO.1         PB4
 SYSBOOT.0       LCD_DATA0     GPIO.0         PC7
 ```
 - SYSBOOT signals are latched on rising edge of PWRONRSTn signal:
+  1. uC disable all drivers connected to SYSBOOT signals for the period 
+    these lines are driven by uC:
+     - assert SENn *HIGH* while using ADDR bus to address the branches using such 
+       drivers (see Agathis Trunk Standard for more details).
 
-- uC disables all drivers connected to SYSBOOT signals for the period SYSBOOT 
-  lines are driven by uC; use **SENn** asserted HIGH while using the ADDR bus 
-  to scan only the branches that use such drivers; this action shall disable 
-  these drivers on respective branches; the branch design is controlled by the 
-  Agathis Trunk Standard - so, keep an eye on the standard.
-
-- uC drives the appropriate SYSBOOT configuration before driving the PWRONRSTn 
-  from LOW to HIGH and releases these lines after.
-  
-- uC enables the drivers on branches by asserting SENn while the respective 
-  branches are scanned with the ADDR bus.
+  2. uC drives the appropriate SYSBOOT configuration before asserting PWRONRSTn 
+     from *LOW* to *HIGH* and tri-states the SYSBOOT lines after.
+    
+  3. uC enables the drivers on branches by asserting SENn *LOW* while the 
+     respective branches are scanned with the ADDR bus.
 
 **SYSBOOT signals configuration:**
 
