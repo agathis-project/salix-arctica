@@ -332,13 +332,13 @@ capable of running at 200 MHz.
 - use timing values in the diagram with +/-20% tolerance.
 - power-down in reverse order.
 - verify 6.1.2. of [AM335x datasheet](http://www.ti.com/lit/ds/symlink/am3356.pdf) 
-  during the root validation
+  during the root validation.
 
 ##### 3.3.1.2. Clocking:
 
 - On board crystal connected to XTALIN and XTALOUT pins of uP is 24MHz.
 
-##### 3.3.1.3. Booting
+##### 3.3.1.3. Booting:
 
 ```
 ====================================================
@@ -375,11 +375,11 @@ SYSBOOT.0       LCD_DATA0     GPIO.0         PC7
 **SYSBOOT signals configuration:**
 
 ```
-SYSBOOT.15,14	    fixed           01    == 24MHz (crystal frequency)
-SYSBOOT.13,12       fixed           00    == mandatory by specs
-SYSBOOT.11,10,9,8   don't care      XXXX    (not controlled by uC)
-SYSBOOT.7,6         fixed:          00    == select MII for EMAC1
-SYSBOOT.5	        fixed:			0     == CLK1 OUT disabled
+SYSBOOT.15,14	    fixed              01 == 24MHz (crystal frequency)
+SYSBOOT.13,12       fixed              00 == mandatory by specs
+SYSBOOT.11,10,9,8   don't care       XXXX == not controlled by uC
+SYSBOOT.7,6         fixed:             00 == select MII for EMAC1
+SYSBOOT.5	        fixed:			    0 == CLK1 OUT disabled
 SYSBOOT.4,3,2,1,0 	configurable:   00001 == UART0,_,MMC0,SPI0
    	                                00010 == UART0,SPI0,_,_
    	                                00011 == UART0,_,_,MMC0
@@ -426,37 +426,38 @@ _     = unavailable device
 ***
 		
 #### 3.3.2. Branch Control Interfaces:
-**Control Circuits Diagram from Agathis Trunk Standard:**
+**Agathis Trunk Standard Control Circuits Diagram:**
 
 ![alt text](https://github.com/agathis-project/pinus-rigida/blob/master/control_circuits_diagram.png)
 
 ***
 
-**uP Branch Control Diagram**
+**uP Branch Control Diagram:**
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_branch_control.PNG)
 
 
 ***
 
-**uC Branch Control Diagram**
+**uC Branch Control Diagram:**
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_branch_control.PNG)
 
 
 !!!! signal name migration: **to follow Agathis Trunk Standard**:
 ENn shall change into GEn and TRG shall change into SEn.
 
-- The branch control interface is **controlled by uC in Stand-By state and
-  by uP in Active** State.
+- The branch control interface is mastered by uC in Stand-By state and
+  by uP in Active State.
   
 - The branch control interface buffers are supplied from **VSB3P3** rail.
   
-- **INTGn, INTSn** are driven by open drain FETs on branches with 10K and 5K 
-  pull-up resistance on root for respectively stand-by and active states.
+- **INTGn, INTSn** signals are driven by open drain FETs on branches with 10K 
+  pull-up in stand-by state and 5K pull-up in active state; the pull-ups are 
   on root.
   
-- **A0-2, GEn and SEn** are driven by uC and uP open drain drivers
+- **A0, A1, A2, GEn and SEn** are driven by uC and uP open drain drivers with
+  10K pull-ups on root.
 
-- disable uC and uP internal pull-ups.
+- must disable any uC or uP default internal pull-ups amd 
 
 - limit branch current leakage into control circuits to +/-10uA **!!!!! updated Agathis Trunk Standard for this requirement and verify pull-up resistors for worst leakage logic levels !!!!**
 
@@ -485,24 +486,25 @@ SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
 #### 3.3.3. Branch Data Interfaces:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_trunk_data_circuits.PNG)
 
-**all data interface buffers (uP and branches) are supplied from V3P3 rail**
+**All data interface buffers (located on uP or branches) are supplied from 
+V3P3 rail**
 
+##### 3.3.3.1. Serial Peripheral Interfaces SPIA and SPIB
 
+- SPIA and SPIB signals on root trunk connector are assigned respectively to 
+  SPI0 and SPI1 of uP AM335x.
 
-##### 3.3.3.1. SPI.A,B
-
-- SPIA and SPIB on trunk connector are respectively SPI0 and SPI1 of uP AM335x
-
-- SPI on root is always master
+- the on root is master on SPIA and SPIB buses.
 
 - as they propagate up the trunk, the SPIA and SPIB are swapped on every 
-  branch that use SPI; this ensures a balanced loading of both channels.
+  branch that use SPI; this is done to balance the load on both buses.
 
-- if a branch use one SPI, it shall connect to SPIA
+- if a branch use one SPI, it shall connect to SPIA on down-trunk connector.
 
-- if a branch use two SPI, it shall take SPIA and SPIB
+- if a branch use two SPI buses, it shall connect them repectivelly to SPIA and 
+  SPIB.
 
-- a branch cannot connect more than one load to SPIA respectively SPIB
+- the number of SPI devices is limited to two per branch.
 
 - SPIx.D0 and SPIx.D1 can be configured by uP as either *miso* or *mosi*; 
   recommended allocation:
