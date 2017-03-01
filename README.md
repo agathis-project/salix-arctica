@@ -457,14 +457,21 @@ ENn shall change into GEn and TRG shall change into SEn.
 - **A0, A1, A2, GEn and SEn** are driven by uC and uP open drain drivers with
   10K pull-ups on root.
 
-- must disable any uC or uP default internal pull-ups amd 
+- first things after coming out or reset, the uC and uP shall:
+  - disable any default internal pull-ups on A0, A1, A2, GEn and SEn
+  - drive A0, A1, A2 _low_
+  - no drive for GEn and SEn (pull-up drive high)
+  
+- for a glitch-less master transition between uC and uP: 
+  - A0, A1, and A2 shall be driven low _before_ and _after_.
+  - GEn and SEn shall preserve their _before_ and _after_ states.
 
 - limit branch current leakage into control circuits to +/-10uA **!!!!! updated Agathis Trunk Standard for this requirement and verify pull-up resistors for worst leakage logic levels !!!!**
 
-- transistors Q4-7 implement the logic level translation between V3P3 and V1P8 
+- transistors Q4-7 implement the logic level translation between V3P3 or V1P8 
   domain used by the uP buffers and VSB3P3 domain used by the uC and the 
   branches; at the same time Q4-7 prevent back-feeding the uP buffers when 
-  V3P3 or V1P8 supplying the uP are down.
+  uP is powered off.
   
 
 ```
