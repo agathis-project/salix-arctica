@@ -322,26 +322,27 @@ capable of running at 200 MHz.
   - internal RTC LDO regulator is disabled.
   - VDD_CORE and VDD_MPU are supplied from VCORE rail while all other internal 
     blocks are supplied from V1P8 rail.
-  - IO buffers voltages are supplied from V3P3 and V1P8 rails as follows:
+  - IO buffers voltages are supplied from V3P3 or V1P8 rails:
     - VDDSHV1,3,5 (root circuits)   = 1.8V by V1P8
 	- VDDSHV2,4,6 (branch circuits) = 3.3V by V3P3
 
-##### Power-up:
+##### 3.3.1.1. Power-up:
 
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/AM335x_powerup.PNG)
-- take timing values in the diagram with +/-20% tolerance.
+- use timing values in the diagram with +/-20% tolerance.
 - power-down in reverse order.
-- verify 6.1.2. of ![AM335x datasheet](http://www.ti.com/lit/ds/symlink/am3356.pdf) during the root validation
+- verify 6.1.2. of [AM335x datasheet](http://www.ti.com/lit/ds/symlink/am3356.pdf) 
+  during the root validation
 
-##### Clocking:
+##### 3.3.1.2. Clocking:
 
 - On board crystal connected to XTALIN and XTALOUT pins of uP is 24MHz.
 
-##### Booting
+##### 3.3.1.3. Booting
 
 ```
 ====================================================
-              Signals translation table
+       Booting Signals Translation Table
 ====================================================
 
 uP Config Pin   uP Pin Name   Trunk Signal   uC Port
@@ -362,13 +363,13 @@ SYSBOOT.0       LCD_DATA0     GPIO.0         PC7
 - SYSBOOT signals are latched on rising edge of PWRONRSTn signal:
   1. uC disable all drivers connected to SYSBOOT signals for the period 
     these lines are driven by uC:
-     - assert SENn *HIGH* while using ADDR bus to address the branches using such 
+     - assert SENn _high_ while using ADDR bus to address the branches using such 
        drivers (see Agathis Trunk Standard for more details).
 
   2. uC drives the appropriate SYSBOOT configuration before asserting PWRONRSTn 
-     from *LOW* to *HIGH* and tri-states the SYSBOOT lines after.
+     from _low_ to *high* and tri-states the SYSBOOT lines after.
     
-  3. uC enables the drivers on branches by asserting SENn *LOW* while the 
+  3. uC enables the drivers on branches by asserting SENn _low_ while the 
      respective branches are scanned with the ADDR bus.
 
 **SYSBOOT signals configuration:**
@@ -418,7 +419,7 @@ MMC0  = uSD-Card J2 connector
 MMC1  = eMMC U14
 SPI0  = SPIA on trunk J1 connector
 EMAC1 = MII1 (Ethernet Port 1) J5 RJ45 rear connector
-   USB0  = USB-OTG on external J6 connector
+USB0  = USB-OTG on external J6 connector
 _     = unavailable device 
 ```
 		
