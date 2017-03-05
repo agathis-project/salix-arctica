@@ -800,8 +800,15 @@ The hub is configured over I2C, the hub being an SMBus slave device:
 
 #### 3.3.7. Ethernet:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_mii.PNG)
+
 ***
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/eth_phy.PNG)
+
+***
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/eth_mag.PNG)
+
+***
+
 
 - the Ethernet feature of the root module is implemented with the 3-port 
   Ethernet switch of AM3356, with one port connected, internally, to the 
@@ -926,9 +933,9 @@ The schematic details the resistor stuffing for the above three options.
 ***
 
 
+### USB Switch
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/usb_switch.PNG)
 
-### USB-OTG and USB Host
-+++ insert schematic detail
 
 ***
 
