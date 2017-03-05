@@ -313,7 +313,18 @@ specified over an extended industrial temperatures range of -40C to +105C.
 It includes two Programmable Real-Time Units (PRUs) 32-Bit RISC processors
 capable of running at 200 MHz.
 
-#### 3.3.1. Powering, Booting and Clocking
+
+#### 3.3.1. uP Clock, Resets, JTAG and UART0 Signals:
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_rst_jtag_clk_uart0.PNG)
+
+```
+EMU0,1, JTAG, UART0 and WARMRSTn signals are available on the extension connector to support uP bring-up and development.
+
+WARMRSTn and PWRONRSTn signals are controlled by the uC.
+
+quarz Y5 (24MHz) and oscillator support components R101,R108,C116,C137 must be validated through lab experiments.
+
+#### 3.3.2. Power-up sequence and Booting
 
 - uP power, boot and reset are controlled by uC.
 
@@ -326,7 +337,7 @@ capable of running at 200 MHz.
     - VDDSHV1,3,5 (root circuits)   = 1.8V by V1P8
 	- VDDSHV2,4,6 (branch circuits) = 3.3V by V3P3
 
-##### 3.3.1.1. Power-up:
+##### 3.3.2.1. Power-up:
 
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/AM335x_powerup.PNG)
 - use timing values in the diagram with +/-20% tolerance.
@@ -334,11 +345,11 @@ capable of running at 200 MHz.
 - verify 6.1.2. of [AM335x datasheet](http://www.ti.com/lit/ds/symlink/am3356.pdf) 
   during the root validation.
 
-##### 3.3.1.2. Clocking:
+##### 3.3.2.2. Clocking:
 
 - On board crystal connected to XTALIN and XTALOUT pins of uP is 24MHz.
 
-##### 3.3.1.3. Booting:
+##### 3.3.2.3. Booting:
 
 ```
 ====================================================
@@ -422,10 +433,12 @@ EMAC1 = MII1 (Ethernet Port 1) J5 RJ45 rear connector
 USB0  = USB-OTG on external J6 connector
 _     = unavailable device 
 ```
+
+
 		
 ***
 		
-#### 3.3.2. Branch Control Interfaces:
+#### 3.3.3. Branch Control Interfaces:
 **Agathis Trunk Standard Control Circuits Diagram:**
 
 ![alt text](https://github.com/agathis-project/pinus-rigida/blob/master/control_circuits_diagram.png)
@@ -458,9 +471,9 @@ ENn shall change into GEn and TRG shall change into SEn.
   10K pull-ups on root.
 
 - first things after coming out or reset, the uC and uP shall:
-  - disable any default internal pull-ups on A0, A1, A2, GEn and SEn
-  - drive A0, A1, A2 _low_
-  - no drive for GEn and SEn (pull-up drive high)
+  - disable any default internal pull-ups on A0, A1, A2, GEn and SEn.
+  - drive A0, A1, A2 _low_.
+  - no drive for GEn and SEn signals (pull-up drive high).
   
 - for a glitch-less master transition between uC and uP: 
   - A0, A1, and A2 shall be driven low _before_ and _after_.
@@ -490,13 +503,13 @@ SEn       PF0   D7       XDMA_EVENT_INTR0     A15    Z          PD
 
 ***
 
-#### 3.3.3. Branch Data Interfaces:
+#### 3.3.4. Branch Data Interfaces:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_trunk_data_circuits.PNG)
 
 **All data interface buffers (located on uP or branches) are supplied from 
 V3P3 rail**
 
-##### 3.3.3.1. Serial Peripheral Interfaces SPIA and SPIB
+##### 3.3.4.1. Serial Peripheral Interfaces SPIA and SPIB
 
 - SPIA and SPIB signals on root trunk connector are assigned respectively to 
   SPI0 and SPI1 of uP AM335x.
@@ -508,7 +521,7 @@ V3P3 rail**
 
 - if a branch use one SPI, it shall connect to SPIA on down-trunk connector.
 
-- if a branch use two SPI buses, it shall connect them repectivelly to SPIA and 
+- if a branch use two SPI buses, it shall connect them respectively to SPIA and 
   SPIB.
 
 - the number of SPI devices is limited to two per branch.
@@ -542,7 +555,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 ```
 
 
-##### 3.3.3.2. Q.A,B,C,D
+##### 3.3.4.2. Q.A,B,C,D
 
 - Q.A,B,C,D are four quads - 4 groups of 4 uP signals
 
@@ -552,7 +565,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 - the standard quads provide point to point communication: root to one branch
 
 - quad branch routing is controlled by the Agathis Trunk Standard to maximize
-  design flexibility, scalability and availabililty.
+  design flexibility, scalability and availability.
 
 - intra quad configuration is detailed by the AM335x datasheet, manual and 
   pinmux utility tool.
@@ -588,7 +601,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 - **recommended allocations for QA,B,C,D are respectively uart1,4,5,3**
 
 
-##### 3.3.3.3. SDIO
+##### 3.3.4.3. SDIO
 
 - notable allocations for SDIO signals:
   - SDIO  (complies with MMC4.3, SD, SDIO 2.0 Specifications)
@@ -598,7 +611,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 - **recommended allocation for SDIO is SDIO**
 
 
-##### 3.3.3.4. GPIO.[0..11]
+##### 3.3.4.4. GPIO.[0..11]
 
 - this interface supports 12 general purpose IO signals.
 
@@ -608,7 +621,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 - unused GPIOs are wired directly, in order, one by one, from down-trunk 
   connector to first GPIOs pins on up-trunk connector.
 
-- uP determines the overal connectivity map from the branch descriptors stored 
+- uP determines the overall connectivity map from the branch descriptors stored 
   in the branch id eeprom.
   
 - notable allocations for GPIO[0..11]
@@ -619,7 +632,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
    controller for monochrome and color STN displays)
 
 
-##### 3.3.3.5. I2C-TRUNK
+##### 3.3.4.5. I2C-TRUNK
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_i2c.PNG)
 
 - I2C-TRUNK root circuit is compliant with Agathis Trunk Standard. 
@@ -652,7 +665,6 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   - the PCB parasitic capacitance is a major contributor and needs to be 
   qualified during root hardware validation (measure the PCB parasitic 
   capacitance against GND plane).
-  
 
 - maximum gateway total parasitic capacitance cannot exceed 352pF, as this 
   capacitance requires 1K equivalent pull-up which is the lowest an i2c 
@@ -669,7 +681,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   two to the power of the number of device address pins connected to KNOT.0,1,2; 
   these devices shall be on branches installed in a contiguous block in the 
   gateway:
-  - if A0,1,2 address bits are exposed and connected respectivelly to 
+  - if A0,1,2 address bits are exposed and connected respectively to 
     KNOT.0,1,2 then 8 modules with identical i2c devices (one each) can be used;
     this is the particular case of the card id eeprom; other i2c with same access
     to A2,A1,A0 address bits lead to same maximized usability.
@@ -694,7 +706,7 @@ SDA     PC0     H6     I2C0_SDA   C17
  
 ```
 
-##### 3.3.3.6. USB.A,B,C,D
+##### 3.3.4.6. USB.A,B,C,D
 
 - these four USB device ports are USB2.0 and they are controlled by an USB hub 
   [USB2514B](http://www.microchip.com/wwwproducts/en/USB2514B) connected 
@@ -715,7 +727,7 @@ SDA     PC0     H6     I2C0_SDA   C17
 #### 3.3.5. LPDDR Memory:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_LPDDR.PNG)
 
-- main RAM selection contraints:
+- main RAM selection constraints:
   - supported by up AM335x
   - low self-refresh current consumption
   - large enough to run a Linux major distribution
@@ -744,7 +756,7 @@ SDA     PC0     H6     I2C0_SDA   C17
   - the hardware reset is not used - use power-up and software reset instead.
   
   - AM335x microprocessors support MMC4.3; later versions of the MMC standard 
-    are backwards compatible; virtually any eMMC memory in 100Ball package 
+    are backward compatible; virtually any eMMC memory in 100Ball package 
 	should fit the design.
 	
   - transfer speed up to 48MByte/s.
@@ -772,25 +784,59 @@ SDA     PC0     H6     I2C0_SDA   C17
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_mii.PNG)
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/eth_phy.PNG)
 
-- the Ethernet feature of the root module is implemented with a 3-port Ethernet 
-  switch inside AM3356 with one port connected, internally, to the 
-  system side and two ports connected to the external LAN connectors through 
-  two Phy transceivers KSZ8091MNX by Microchip/Micrel using MII interfaces of 
-  AM3356.
-
-- support 10/100Base-T.
+- the Ethernet feature of the root module is implemented with the 3-port 
+  Ethernet switch of AM3356, with one port connected, internally, to the 
+  system side and two ports connected to the external LAN connectors over 
+  two Phy transceivers KSZ8091MNX using the MII interfaces supportinging 
+  10/100Base-T.
   
-- the two Ethernet ports support PoE+; the power is separated by the LAN 
-  transformers and connected to the power module through connectors J? and J?+1. 
+- the two Ethernet ports support PoE+; the DC power is separated by the LAN 
+  transformers and connected to the power module through connectors J7 and J8. 
 
-- to implement EEE directive the TXER, TXEN and TXD must be controlled by SW;
-  the MAC of AM3356 does not support EEE.
+- the Phy transceivers KSZ8091MNX provide a number of power reduction features:
+  - power-saving mode
+  - energy-detect power-down mode
+  - power-down mode
+  - slow-oscillator mode
+  - Energy Efficient Ethernet (EEE)
+    - to implement EEE directive for the *MAC to Phy* direction, the TXER, TXEN 
+	  and TXD[3:0] must be controlled by the SW; the AM3356's MAC does not 
+	  support EEE.
+    - to implement EEE directive for the *Phy to MAC direction, the RXDV, RXER 
+	  and RXD[3:0] must be monitored by the SW; the AM3356's MAC does not 
+	  support EEE.
+  - Wake-On-LAN
+  
+- the Phy transceivers can be turned-off completelly by uC asserting low EN 
+  signal.
+  
+- the uC monitors the nINT line that can be programmed to transmit a variety of 
+  Phy events 
+  
+```
+KSZ8091MNX Straping Options:
 
+PHYADD[2,1] = 00
+PHYADD[0]   = 0 for ethernet port 1 (depopulate pu)
+PHYADD[0]   = 1 for ethernet port 2
+CONFIG[2:0] = 000 (MII)
+PME_EN      = 1 (enable PME for Wake-on-LAN
+ISO         = 0 (Isolate disable)
+DUPLEX      = 1 (Full-duplex)
+NWAYEN      = 1 (autoneg enable)
+B-CAST-OFF  = 1 (address 0 is set as unique)
+NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 
+- ethernet 1 MDIO address = 0
+- ethernet 2 MDIO address = 1
+- broadcasting MDIO address = disabled
+- MII, full duplex, autoneg enable
+- disabled ISOLATE function
+- disabled PME output for Wake-on-LAN (overriden by SW)
+```  
+  
+  
 ***
-
-#### 3.3.8. uP Clocks, Reset, JTAG and UART0 Signals:
-![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_rst_jtag_clk_uart0.PNG)
 
 
 ### 3.4. Microcontroller
