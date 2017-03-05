@@ -318,6 +318,9 @@ capable of running at 200 MHz.
 #### 3.3.1. uP Clock, Resets, JTAG and UART0 Signals:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_rst_jtag_clk_uart0.PNG)
 
+- **XTEST-CPU** harness is connected to the expansion connector.
+- **CPU-RST** harness is connected to uC.
+
 - EMU0,1, JTAG and UART0 signals are wired only to the extension connector 
   to support uP bring-up, development and production testing/programming.
 
@@ -452,7 +455,7 @@ _     = unavailable device
 
 
 !!!! signal name migration: **to follow Agathis Trunk Standard**:
-ENn shall change into GEn and TRG shall change into SEn.
+ENn shall change into GEn and TRIG shall change into SEn.
 
 - The branch control interface is mastered by uC in Stand-By state and
   by uP in Active State.
@@ -469,11 +472,11 @@ ENn shall change into GEn and TRG shall change into SEn.
 - first things after coming out or reset, the uC and uP shall:
   - disable any default internal pull-ups on A0, A1, A2, GEn and SEn.
   - drive A0, A1, A2 _low_.
-  - no drive for GEn and SEn signals (pull-up drive high).
+  - tristate GEn and SEn drivers to let the pull-up to drive high.
   
 - for a glitch-less master transition between uC and uP: 
-  - A0, A1, and A2 shall be driven low _before_ and _after_.
-  - GEn and SEn shall preserve their _before_ and _after_ states.
+  - drive _low_ A0, A1, and A2.
+  - preserve GEn and SEn states.
 
 - limit branch current leakage into control circuits to +/-10uA **!!!!! updated Agathis Trunk Standard for this requirement and verify pull-up resistors for worst leakage logic levels !!!!**
 
@@ -484,6 +487,8 @@ ENn shall change into GEn and TRG shall change into SEn.
   
 
 ```
+Branch Control Signal Assignment Table
+=======================================
                                                      uP State   uP State
 Control   uC    uC       uP                   uP     before     after
 Circuit   Port  Ball     Pin Name             Ball   PWRONRSTn	PWRONRSTn
@@ -553,13 +558,13 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 
 ##### 3.3.4.2. Q.A,B,C,D
 
-- Q.A,B,C,D are four quads - 4 groups of 4 uP signals
+- QA,B,C,D are four quads - 4 groups of 4 uP signals
+
+- a quad provides a point to point communication: root to one branch.
 
 - each quad is one allocation unit; unused signals in a quad allocated to a
   a branch cannot be re-allocated to another branch.
  
-- the standard quads provide point to point communication: root to one branch
-
 - quad branch routing is controlled by the Agathis Trunk Standard to maximize
   design flexibility, scalability and availability.
 
@@ -594,7 +599,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   - uart3 (rxd,txd,ctsn,rtsn)
   - gpio
   
-- **recommended allocations for QA,B,C,D are respectively uart1,4,5,3**
+- **THE recommended allocations for QA,B,C,D are respectively uart1,4,5,3**
 
 
 ##### 3.3.4.3. SDIO
@@ -602,9 +607,9 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 - notable allocations for SDIO signals:
   - SDIO  (complies with MMC4.3, SD, SDIO 2.0 Specifications)
   - gpio1 (ARM)
-  - pr1_* ((programmable real time unit subsystem))
+  - pr1_* (programmable real time unit subsystem)
 
-- **recommended allocation for SDIO is SDIO**
+- **THE recommended allocation for SDIO is SDIO**
 
 
 ##### 3.3.4.4. GPIO.[0..11]
@@ -633,7 +638,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 
 - I2C-TRUNK root circuit is compliant with Agathis Trunk Standard. 
 
-- I2C-TRUNK connects uP as master for: 
+- I2C-TRUNK uses uP as master for: 
   - card id eeprom installed on root and branches
   - uC
   - i2c devices installed on branches
@@ -641,36 +646,36 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 - uC and card id eeprom are supplied from VSB3P3 rail which is always ON; 
   this allows uC access to the eeprom when V3P3 is down.
 
-- level translation and power down separation between uC and uP sides of the 
-  I2C-TRUNK is implemented with Q2A,B MOSFET:
+- level translation and power down separation between VSB3P3 and V3P3 sides of 
+  the I2C-TRUNK is implemented with Q2A,B MOSFET:
    - I2C signals on either side is pulled high by their respective pull-ups.
    - I2C signals on either side cannot exceed their respective pull-up as the
      MOSFET is turned off when the channel voltage is VSB3P3 or higher.   
   
-- I2C-TRUNK root pull-up is:
+- **I2C-TRUNK root pull-up** is:
   - 6.67K in active mode.
   - 20K in stand-by.
 
-- I2C-TRUNK root maximum parasitic capacitance is 4pF (uP) + 8pF (eeprom) + 
-  10pF (uC) +  25pF (PCB) + 5pF (connector) for a total of 52pF; 
+- **I2C-TRUNK root maximum parasitic capacitance is 52pF**; this is made of 4pF 
+  (uP) + 8pF (eeprom) + 10pF (uC) +  25pF (PCB) + 5pF (connector); 
   - this parasitic capacitance requires a maximum pull-up resistance of 
     352K/52 = 6.77K; this resistance is build using one 10K resistor on uP side 
 	and 20K on uC side.
   - the root parasitic capacitance must be declared in root id eeprom hw 
-  descriptors.
+    descriptors.
   - the PCB parasitic capacitance is a major contributor and needs to be 
-  qualified during root hardware validation (measure the PCB parasitic 
-  capacitance against GND plane).
+    qualified during root hardware validation (measure the PCB parasitic 
+    capacitance against GND plane).
 
-- maximum gateway total parasitic capacitance cannot exceed 352pF, as this 
-  capacitance requires 1K equivalent pull-up which is the lowest an i2c 
-  fast-mode capable drive can drive without exceeding the standard minimum 
-  logic level.
+- **I2C-TRUNK gateway maximum parasitic capacitance is 352pF**; this value 
+  requires 1K equivalent pull-up, which is the lowest an i2c fast-mode capable 
+  drive can drive without exceeding the standard minimum logic level.
   
-- I2C-TRUNK root leakage current is 18uA (uP) + 2uA (eeprom) + 10uA (uC) for a 
-  total of 30uA; this current will cause a maximum 0.2V voltage drop on 6.77K 
-  pull-up resistance, which will lead to a VIH = V3P3min - 0.2V = 3V which is 
-  higher than VIHmin = 0.7 x V3P3min = 2.24V with a margin of 0.76V.
+- **I2C-TRUNK root maximum leakage current is 30uA**; this is made of 18uA (uP) 
+  + 2uA (eeprom) + 10uA (uC); this current will cause a maximum 0.2V voltage 
+  drop on 6.77K  pull-up resistance, which will lead to a VIH = V3P3min - 0.2V 
+  = 3V which is higher than VIHmin = 0.7 x V3P3min = 2.24V with a margin of 
+  0.76V.
   - the root max leakage must be declared in root id eeprom hw descriptors.
   
 - the number of identical i2c devices in a gateway (I2C-TRUNK) is limited to 
@@ -691,15 +696,14 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
     branch per gateway is allowed.
 
 ``` 
-I2C-TRUNK signal allocation table
-
+I2C-TRUNK Signal Allocation Table
+==================================
                                            
 I2C     uC      uC     uP         uP     
 TRUNK   Port    Ball   Pin Name   Ball   
 =======================================
 SCL     PC1     G6     I2C0_SCL   C16
 SDA     PC0     H6     I2C0_SDA   C17
- 
 ```
 
 ##### 3.3.4.6. USB.A,B,C,D
@@ -742,10 +746,8 @@ SDA     PC0     H6     I2C0_SDA   C17
 
   - connected to port mmc1 on AM3356 uP using 1.8V signaling interface.
   
-  - use SYSBOOT[4:0] = 11100 to boot from eMMC.
-  
   - the device is operated from V3P3 and V1P8; the power supply is turned off 
-    by cutting the VSS and VSSQ lines.
+    by cutting the VSS and VSSQ lines using Q10 dual MOSFET.
 	
   - assert EN-eMMC (uC port PJ1, ball# D5) HIGH to turn-on the power.
   
@@ -763,7 +765,7 @@ SDA     PC0     H6     I2C0_SDA   C17
   - connected to port mmc0 on AM3356 uP using 3.3V signaling interface.
   
   - the device is operated from V3P3; the power supply is turned off by cutting 
-    the VSS line.
+    the VSS line using Q13 dual MOSFET.
 
   -	assert EN-SDCARD (uC port PE6, ball# E7) HIGH to turn-on the power.
 	
@@ -778,6 +780,7 @@ SDA     PC0     H6     I2C0_SDA   C17
 
 #### 3.3.7. Ethernet:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_mii.PNG)
+***
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/eth_phy.PNG)
 
 - the Ethernet feature of the root module is implemented with the 3-port 
@@ -807,7 +810,7 @@ SDA     PC0     H6     I2C0_SDA   C17
   signal.
   
 - the uC monitors the nINT line that can be programmed to transmit a variety of 
-  Phy events 
+  Phy events.
   
 ```
 KSZ8091MNX Straping Options:
