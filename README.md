@@ -678,7 +678,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   0.76V.
   - the root max leakage must be declared in root id eeprom hw descriptors.
   
-- the number of identical i2c devices in a gateway (I2C-TRUNK) is limited to 
+- **I2C-TRUNK gateway maximum number of identical i2c devices** is limited to 
   two to the power of the number of device address pins connected to KNOT.0,1,2; 
   these devices shall be on branches installed in a contiguous block in the 
   gateway:
@@ -833,8 +833,8 @@ The hub is configured over I2C, the hub being an SMBus slave device:
 	  support EEE.
   - Wake-On-LAN
   
-- the Phy transceivers can be turned-off completelly by uC asserting low EN 
-  signal.
+- the Phy transceivers can be turned-off completelly by uC asserting *low*
+  the EN signal.
   
 - the uC monitors the nINT line that can be programmed to transmit a variety of 
   Phy events.
@@ -866,13 +866,14 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 ### 3.4. Microcontroller (uC)
 
 #### 3.4.1. Power, Reset and Clocking
-![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_power.PNG)
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_VSB3P3_reg.PNG)
 
-- the uC is supplied with VSB3P from a low quiescent voltage regulator RT9073.
+- the uC is supplied with VSB3P from a low quiescent current(typ 1uA)voltage 
+  regulator RT9073.
 - uC use crystal Y4 to generate 32.768kHz internal clock.
 - uC reset is embedded; there are no external features.
 
-#### 3.4.2. # Root ID Eeprom
+#### 3.4.2. Root ID Eeprom
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_card_id_eeprom.PNG)
 
 - the root id eeprom is MC24C32, which implements two memories at two distinct 
@@ -890,9 +891,15 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
   produce a DC voltage about 5V needed by the sensing circuit in the AM3356.
 
 #### 3.4.4. I2C-MCU bus
-![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_i2c.PNG)
 
-***
+- This is the uC i2c bus that controlls a number of devices as listed below.
+
+- This i2c bus operates at 400kHZ and is I2C Fast Mode compliant.
+
+- This bus connects as well to the power module where other devices may be 
+  connected; power module design is responsible to avoid any i2c addressing
+  issues.
+
 
 ```
 I2C-MCU addresses map (8 bit with LSB as the w/r bit)
@@ -936,6 +943,11 @@ The schematic details the resistor stuffing for the above three options.
 ### USB Switch
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/usb_switch.PNG)
 
+- When the root needs to be the device for an USB host connected to USB-OTG 
+  port, a hw switch connects the host firstly to the uC to run an 
+  authentication test; only after passing the test, the host is connected to 
+  the uP. 
+
 
 ***
 
@@ -948,9 +960,9 @@ The schematic details the resistor stuffing for the above three options.
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/Test_extension_card_connector.PNG)
 
 ## Schematic 
-[The schematic](https://github.com/agathis-project/salix-arctica/blob/master/V1/SCH-1-1-1.pdf)
+[The schematic](https://github.com/agathis-project/salix-arctica/blob/master/v1/SCH-1-1-1.pdf)
 for this design was captured in Altium and is available as pdf and project 
-file package in V1 folder of this repo.
+file package in v1 folder of this repo.
 
 
 ## Layout
