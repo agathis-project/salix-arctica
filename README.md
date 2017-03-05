@@ -76,7 +76,8 @@ located on branches.
 
 - root size excluding connectors - square, side less than 85mm
 
-- trunk connector supports speeds higher than 5Gbps per differential line.
+- trunk connector using controlled impedance technology to support speeds 
+  higher than 5Gbps per differential line.
 
 - total system power max 13.5W.
 
@@ -297,16 +298,16 @@ located on branches.
 
 #### 3.2.8. Power Distribution on Trunk Connector
 
-- VSYS    connected to pins A48-50; filtered with FB4(ferrite bead 220 Ohm @1ooMHz) C53(220R) and C106 (100n)
-- VSB3P3  connected to pins A47
-- V3P3    connected to pin  A6
-- GND     connected to pins A32,A45,B5,B7,B16,B18,B20,B25-26,B38,B41,B44,B47,B50
+- VSYS    distributed over A48-50; filtered with FB4(ferrite bead 220 Ohm @1ooMHz) C53(220R) and C106 (100n)
+- VSB3P3  distributed over A47
+- V3P3    distributed over  A6
+- GND     distributed over A32,A45,B5,B7,B16,B18,B20,B25-26,B38,B41,B44,B47,B50
    - GND is multipurpose:
       - shared as return path for VSYS,VSB3P3,V3P3 and all digital signals 
       - shield/return path for high speed controlled impedance signals (USB)
 	  - shield/return path for high speed clocks (SPI and SDIO clocks)
 
-### 3.3. Microprocessor
+### 3.3. Microprocessor:
 Use [AM3356BZCZA80](http://www.ti.com/product/AM3356) by TI.
 This is an ARM Cortex A-8 32bit RISC processor running at max 600MHz and 
 specified over an extended industrial temperatures range of -40C to +105C. 
@@ -317,14 +318,13 @@ capable of running at 200 MHz.
 #### 3.3.1. uP Clock, Resets, JTAG and UART0 Signals:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_rst_jtag_clk_uart0.PNG)
 
-```
-EMU0,1, JTAG, UART0 and WARMRSTn signals are available on the extension connector to support uP bring-up and development.
+- EMU0,1, JTAG and UART0 signals are wired only to the extension connector 
+  to support uP bring-up, development and production testing/programming.
 
-WARMRSTn and PWRONRSTn signals are controlled by the uC.
+- Crystal Y5 (24MHz) and oscillator support components R101,R108,C116,C137 must 
+  be validated through lab experiments.
 
-quarz Y5 (24MHz) and oscillator support components R101,R108,C116,C137 must be validated through lab experiments.
-
-#### 3.3.2. Power-up sequence and Booting
+#### 3.3.2. Power-up sequence and Booting:
 
 - uP power, boot and reset are controlled by uC.
 
@@ -345,11 +345,7 @@ quarz Y5 (24MHz) and oscillator support components R101,R108,C116,C137 must be v
 - verify 6.1.2. of [AM335x datasheet](http://www.ti.com/lit/ds/symlink/am3356.pdf) 
   during the root validation.
 
-##### 3.3.2.2. Clocking:
-
-- On board crystal connected to XTALIN and XTALOUT pins of uP is 24MHz.
-
-##### 3.3.2.3. Booting:
+##### 3.3.2.2. Booting:
 
 ```
 ====================================================
