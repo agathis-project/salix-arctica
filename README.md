@@ -26,7 +26,7 @@ things over media interfaces located on branches.
   applications, there is no physical architecture to support a modular scalable 
   construction.
 
-- A large number of things are located in uncontrolled environments; they need 
+- Many things are located in uncontrolled environments; they need 
   to deal with the scarcity of power supply, harsh electrical and mechanical 
   conditions, wide temperature and humidity ranges and corrosive atmosphere.
 
@@ -95,7 +95,7 @@ things over media interfaces located on branches.
 
 #### 3.2.1. Power design strategy:
 
-- **the Gateway must be seen as a battery operated system with opportunistic 
+- **the Gateway must be seen as a battery-operated system with opportunistic 
   access to other power sources.** This perspective helps design a power 
   efficient gateway with extended availability.
 
@@ -106,7 +106,7 @@ things over media interfaces located on branches.
 - hardware power states: 
   - **power-down**
 	- VSB3P3 below minimum level to safely operate the uC; the uC monitors the 
-	  availability of the system power and always does a gracefull shut-down 
+	  availability of the system power and always does a graceful shut-down 
 	  of all devices before the voltage supply goes critical.
 	
   - **stand-by:**
@@ -137,7 +137,7 @@ things over media interfaces located on branches.
 
   3. **USB-OTG** connector on root (service only).
   
-- power conversion, storage and distribution is done by the power module.
+- power module does the primary conversion, storage and distribution.
 
 - **VSYS** serves as bulk power distributed to the entire gateway.
   
@@ -177,7 +177,7 @@ things over media interfaces located on branches.
    programmable over i2c, using **VSEL** signal, which must be asserted *low* 
    at power-up: 
    
-   - this feature can be used to change the uP operating power  points (OPP).
+   - this feature can be used to change the uP operating power points (OPP).
 	 
    - default output voltage for **VSEL = "low" is 1.05V** and can 
      be used as such for the initial power-up of the uP.
@@ -221,7 +221,7 @@ things over media interfaces located on branches.
 - **V3P3 and VUSB** regulators use same IC type TPS6306 and share MSYNC3M 
   synchronization signal.
   
-- **V3P3 regulator** is turned ON according to AM3356 power-up/power-down 
+- **V3P3 regulator** is turned ON per AM3356 power-up/power-down 
   sequence requirements.
   
 - drive (uC) **MSYNC3M** by default with a clock signal of 2.4MHz 
@@ -280,8 +280,16 @@ things over media interfaces located on branches.
   - divide 12MHz by 5 to generate MSYNC3M at 2.4MHz 50% duty cycle
   - divide 12MHz by 4 to generate SYNC3M at 3MHz 50% duty cycle
 
-#### 3.2.7. Power Module Connector and POE Connectors
-+++ insert schematic detail
+#### 3.2.7. Power Module Power and PoE Connectors
+- connector J9 delivers:
+  - VSYS power rail into root module
+  - VSB3P3 standby voltage rail into power module
+  - I2C-MCU bus to control the power module
+  - PINTn interrupt signal from power module
+  - VPIN power from USB-OTG port to feed the gateway in service mode.
+  
+- connectors J7 and J8 deliver the power to/from PoE PSE (Power Supply 
+Equipment) or PD (Powered Device) circuits on power module.
 
 #### 3.2.8. Power Distribution on Trunk Connector
 
@@ -299,7 +307,7 @@ things over media interfaces located on branches.
 
 Use [AM3356BZCZA80](http://www.ti.com/product/AM3356) by TI.
 This is an ARM Cortex A-8 32bit RISC processor running at max 600MHz and 
-specified over an extended industrial temperatures range of -40C to +105C. 
+specified over an extended industrial temperature range of -40C to +105C. 
 It includes two Programmable Real-Time Units (PRUs) 32-Bit RISC processors
 capable of running at 200 MHz.
 
@@ -560,7 +568,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   a branch cannot be re-allocated to another branch.
  
 - quad branch routing is controlled by the Agathis Trunk Standard to maximize
-  design flexibility, scalability and availability.
+  gateway flexibility, scalability and availability.
 
 - intra quad configuration is detailed by the AM335x datasheet, manual and 
   pinmux utility tool.
@@ -607,8 +615,6 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   - SDIO  (complies with MMC4.3, SD, SDIO 2.0 Specifications)
   - gpio1 (ARM)
   - pr1_* (programmable real time unit subsystem)
-
-- **THE recommended allocation for SDIO is SDIO**
 
 ##### 3.3.4.4. GPIO.[0..11]
 
@@ -822,7 +828,7 @@ The hub is configured over I2C as an SMBus slave device:
 - the two Ethernet ports support PoE+; the DC power is separated by the LAN 
   transformers and connected to the power module through connectors J7 and J8. 
 
-- the Phy transceivers KSZ8091MNX provide a number of power reduction features:
+- the Phy transceivers KSZ8091MNX provide several power reduction features:
   - power-saving mode
   - energy-detect power-down mode
   - power-down mode
@@ -836,7 +842,7 @@ The hub is configured over I2C as an SMBus slave device:
 	  support EEE.
   - Wake-On-LAN
   
-- the Phy transceivers can be turned-off completelly by uC asserting *low*
+- the Phy transceivers can be turned-off completely by uC asserting *low*
   the EN signal.
   
 - the uC monitors the nINT line that can be programmed to transmit a variety of 
@@ -861,7 +867,7 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 - broadcasting MDIO address = disabled
 - MII, full duplex, autoneg enable
 - disabled ISOLATE function
-- disabled PME output for Wake-on-LAN (overriden by SW)
+- disabled PME output for Wake-on-LAN (overridden by SW)
 ```  
 
 - the two Phy transceivers are managed by using a standard MDIO interface.
@@ -884,8 +890,8 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 - the root id eeprom is MC24C32, which implements two memories at two distinct 
   i2c addresses:
   - 32 Kbyte memory at 0xAE  
-  - 32  byte id     at 0xBE - lockable, intended to hold a factory programmable 
-  serial number.
+  - 32  byte id     at 0xBE - lockable, intended to hold a factory programmable, 
+    never to be changed, serial number.
 
 #### 3.4.3. VBUS Host Voltage Doubler
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_vbus_voltage_doubler.PNG)
@@ -899,14 +905,14 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 
 #### 3.4.4. I2C-MCU bus
 
-- This is the i2c bus used by uC to controll a number of devices as listed 
+- This is the i2c bus used by uC to control a number of devices as listed 
   below.
 
-- I2C-MCU operates at 400kHZ and is I2C Fast Mode compliant.
+- I2C-MCU operates at 400kHz and is I2C Fast Mode compliant.
 
 - This bus is connected as well to the power module where other devices may be 
   connected; power module design is responsible to avoid any i2c addressing
-  issues and maintain compliance with I2C Fast Mode (400kHz operation).
+  issues and maintain compliance with I2C Fast Mode.
 
 
 ```
@@ -926,7 +932,7 @@ FAN5355UC03X (VCORE): 0x94
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/tpm.PNG)
 
 ***
-- the TPM solution can be implemented with one of the following  devices:
+- the TPM solution can be implemented with one of the following devices:
   - [AT97SC3205T](http://www.microchip.com/wwwproducts/en/AT97sc3205t) (by Microchip/Atmel) - installed by default.
   - [ST19NP18](http://www.st.com/content/ccc/resource/technical/document/data_brief/7e/15/02/2a/e9/bd/4b/eb/DM00039181.pdf/files/DM00039181.pdf/jcr:content/translations/en.DM00039181.pdf)    (by STMicro) 
   - [SLB9645](http://www.infineon.com/dgdl/Infineon-TPM+SLB+9645-DS-v02_14-EN.pdf?fileId=5546d4625185e0e201518b83d0c63d7c)     (by Infineon)
@@ -958,9 +964,14 @@ it as well to uP in next hw release.
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/usb_switch.PNG)
 
 - When the root needs to be the device for an USB host connected to USB-OTG 
-  port, a hw switch connects the host to the uC USB port to run an 
-  authentication verification; after passing the test, the host is switched to 
+  port, a hw switch(U22) connects the host to the uC USB port to run the
+  authentication; after passing the test, the host is switched to 
   the uP USB (USB0 of AM3356).
+
+- harness **USB0** is wired to uP
+- harness **USB-MCU** is wired to uC
+- harness **USB-SW-CTRL** is wired to uC
+- harness **USB-CONN** is wired to USB-OTG connector.
 
 ***
 
