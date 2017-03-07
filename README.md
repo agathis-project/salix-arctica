@@ -1,87 +1,78 @@
     AP#:           1
     Title:         Root Module HW
-    Type: 	       HW Development
+    Product:       PCA-1-1
+    Repo: 	       agathis-project
+    State: 		   Verification
     License:       TAPR
-    State: 		   Verification [editing in progress]
     Author: 	   md-agathisproject
-    Issue-Tracker: https://github.com/agathis-project/salix-arctica/issues
-    Product Codes: PCB-1-(1)-1, PCA-1-(1)-1
-
 	
 # Root Module HW
 
 ## 1. Abstract
-The root module is  the core component of the Agathis Gateway which is build by 
-stacking the root module and branch modules, sharing a vertical interconnect 
-sub-system. The root integrates a tree port Ethernet switch using two ports to 
-connect directly with the external world and one internal port to connect -
-through the microprocessor - with a plurality of things over media interfaces 
-located on branches. 
+The root module is  the basic component of the Agathis Gateway which is build 
+by stacking root and branch modules, sharing a vertical interconnect. 
+The root uses a microprocessor with a n integrated 3-port Ethernet Switch 
+with two LAN ports and one system port; the microprocessor uses a range of low 
+speed serial interfaces to communicate with a plurality of external world 
+things over media interfaces located on branches. 
 
 ## 2. Rationale:
-- As this is the first module of the Agathis Gateway, the rationale for this AP
-  is made from a system perspective.
 
 **Current technology:**
-- By large, the interface used by majority of things is one of the basic 
-  physical layer interfaces such us: UART, SPI, I2C, SDIO, USB and the ubiquitous 
-  GPIO.
+- Majority of things use one of the basic physical layer interfaces such us: 
+  UART, SPI, I2C, SDIO, USB and the ubiquitous GPIO.
 
 - Although today's microprocessors have these interfaces available for embedded 
-  applications, there is no architecture supporting a modular scalable construction.
+  applications, there is no physical architecture to support a modular scalable 
+  construction.
 
-- A large number of things located in uncontrolled environments; they need to 
-  deal with the scarcity of power supply, harsh electrical and mechanical 
+- A large number of things are located in uncontrolled environments; they need 
+  to deal with the scarcity of power supply, harsh electrical and mechanical 
   conditions, wide temperature and humidity ranges and corrosive atmosphere.
 
-- Practically, there is no open scalable gateway designed to interface with 
-  things in these environments.
+- Current solutions to interface with things use single boards computers 
+  assembled in custom solutions with limited or no scalability or field 
+  flexibility.
   
-- Current solutions to interface with things in un-controlled environments use 
-  industrial single boards computers assembled in custom solutions with limited 
-  or no scalability or field flexibility.
-  
+- Practically, there is no open source scalable gateway - until now.
+
 **Agathis Gateway solution:** 
 
 - **A stackable field reconfigurable gateway** that can adapt to evolving 
-  things and grow with their numbers and diversity.
+  things and scale with their numbers and diversity.
 
-- **A gateway that talks the language of things**, be it UART, I2C, SPI, SDIO,
-  USB, PCIe or even General Purpose IOs.
+- **A gateway that talks the dumb language of things**, at their physical level,
+  like UART, SPI, I2C, GPIO.
 
 - **A gateway that can be installed where the things are** from the sea bed to 
-  Mars surface, from a floor plant to a deep mining operation. 
+  Mars surface, from a floor plant to a deep mining operation.
 
 - **An open source gateway** - that supports competitiveness and fast 
-  development of new interfaces with things.
+  development of new interfaces with the things out there.
   
 - First module of this gateway is the root module, as covered herein.
 
-### 3. Content
+## 3. Content
 
-#### 3.1. Design goals and overall constraints and requirements:
+### 3.1. Design goals and overall constraints and requirements:
 
 - operational environmental temperature range at zero internal power 
   dissipation: -40C to 85C.
-  - this is achieved by using components with maximum operational temperature 
-    of 85C.
 
 - operational environmental temperature range at maximum performance power 
   dissipation: -40C to 75C:
-  - internal power dissipation increases device temperature; for the entire 
-    module to achieve 85C maximum temperature, the devices running hot should 
-    have higher maximum operational temperature.
 
-- strong preference for devices with full datasheet and free support.
+- strong preference for devices with full datasheet and free online support.
 
-- root size excluding connectors - square, side less than 85mm
+- root target size excluding connectors - 85mm square
 
 - trunk connector using controlled impedance technology to support speeds 
   higher than 5Gbps per differential line.
 
 - total system power max 13.5W.
 
-- all devices with current consumption higher than 0.1mA are turn-off capable.
+- have a power (load) switch for all devices with current consumption higher 
+  than 0.1mA.
 
 - optimize EMC for consistent margin against most stringent standards; 
   characterize these margins during system validation.
@@ -91,7 +82,7 @@ located on branches.
 - capable to operate from USB-OTG port power supply for development and 
   field servicing purposes.
 
-- support PoE operation as Powered Device and Power Supply Equipment.
+- support PoE operation as Powered Device and/or Power Supply Equipment.
 
 - capable to run a main stream Linux distribution.
 
@@ -100,9 +91,9 @@ located on branches.
 - provide hardware solution for host authentication when operating as device 
   on USB-OTG port.
 
-#### 3.2. Power management
+### 3.2. Power management
 
-##### 3.2.1. Power design strategy:
+#### 3.2.1. Power design strategy:
 
 - **the Gateway must be seen as a battery operated system with opportunistic 
   access to other power sources.** This perspective helps design a power 
@@ -110,22 +101,22 @@ located on branches.
 
 - uC and uP must be programmed for lowest system power consumption; such us:
   turn off the Christmas lights - nobody is watching anyway; the battery life
-  time is far more precious.
+  time is more precious.
   
 - hardware power states: 
   - **power-down**
-	- VSB3P3 below minimum level to safely operate the uC; the uC knows the 
-	  availability of the system power and always does a controlled
-	  power-down of all devices before the voltage supply goes critical.
+	- VSB3P3 below minimum level to safely operate the uC; the uC monitors the 
+	  availability of the system power and always does a gracefull shut-down 
+	  of all devices before the voltage supply goes critical.
 	
   - **stand-by:**
     - VSB3P3 is at a safe operating level.
-    - uC - watching its internal real time clock and trunk interface for a 
+    - uC monitors its internal real time clock and trunk interface for a 
 	wake-up/interrupt event.
 	- V3P3, V1P8 and VCORE regulators are turned off (uP and its external 
 	interfaces are powered down).
-	- uC monitor VSYS to detect imminent power failure and turn-off all 
-	remaining devices before full hardware shut-down occurs.
+	- uC monitor VSYS to detect passing the **power-down** threshold and enter
+	**power-down** state.
     - battery reserve is monitored and used for power management.
 	
   - **active:**
@@ -135,28 +126,26 @@ located on branches.
 
 ***
 	
-##### 3.2.2. Tree Power Distribution:
+#### 3.2.2. Tree Power Distribution:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/TreePowerDistribution.PNG)
 
-- The gateway is supplied by the power module which adapts the **DC input** 
-  power to feed the **VSYS** rail or to charge a **back-up battery**.
+- The gateway can be powered through:
+
+  1. **DC input** connector on power module.
+
+  2. **LAN Port #1 or #2** configured as PoE Powered Device.
+
+  3. **USB-OTG** connector on root (service only).
+  
+- power conversion, storage and distribution is done by the power module.
 
 - **VSYS** serves as bulk power distributed to the entire gateway.
   
-- **VSYS** can be sourced by an optional *Power over Ethernet* block installed
-  on the power module; this PoE block is wired to the Ethernet magnetics on 
-  root over two connectors; the magnetics must support PoE+ power levels.
-
-- USB-OTG port in device mode should be able supply a limited current to the 
-  power module to feed the VSYS and charge the battery.
-  
 - **V1P8** and **VCORE** are local distribution rails (root only).
 
-- **V3P3** is a power rail that is **ON** only for an **active** gateway; 
-  it supplies the the root and branches **data interface circuits**.
+- **V3P3** supplies the **data interface circuits** on root and branches.
 
-- **VSB3P3** is a power rail that is always **ON**; it supplies root and the 
-  branches **control interface circuits**.
+- **VSB3P3** supplies the **control interface circuits** on root and branches.
 
 - **USB-OTG** port may either: 
   - **sink power** when configured as USB Device. 
@@ -167,12 +156,12 @@ located on branches.
 
 ***
   
-##### 3.2.3. VCORE and V1P8 Regulator:
+#### 3.2.3. VCORE and V1P8 Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VCORE_and_V1P8_regulators.PNG)
 
-- **V1P8** rail supplies uP, LPDDR, eMMC, Ethernet Phy
+- **V1P8** rail supplies uP, LPDDR, eMMC, Ethernet Phy.
 
-- **VCORE** rail supplies uP (V_CORE and V_MPU connected together)
+- **VCORE** rail supplies uP (V_CORE and V_MPU of AM3356 wired together)
 
 - **V1P8 and VCORE** regulators feed from VSYS through FB5, C48, C54 filters.
 
@@ -185,20 +174,21 @@ located on branches.
   into the VSYS rail.
 
 - **VCORE** regulator output can be switched between two voltage levels, 
-   programmable over i2c, using **VSEL** signal: 
+   programmable over i2c, using **VSEL** signal, which must be asserted *low* 
+   at power-up: 
    
    - this feature can be used to change the uP operating power  points (OPP).
 	 
-   - default start-up output voltage for **VSEL = "low" is 1.05V** and can 
+   - default output voltage for **VSEL = "low" is 1.05V** and can 
      be used as such for the initial power-up of the uP.
 	 
-   - default start-up output voltage for **VSEL = "high" is 1.2V and MUST 
+   - default output voltage for **VSEL = "high" is 1.2V and MUST 
      BE ADJUSTED** before use; if there is no need to switch the output
-     voltage during normal operation, then the second voltage must be set to same
-     value as first (safer operation).	 
+     voltage during normal operation, then the second voltage must be set to 
+	 same value as first (safe operation).	 
 	 
 - **V1P8 and VCORE** regulators are enabled by the **EN-VCORE and EN-V1P8** 
-  signals controlled by the uC.
+  signals driven by the uC.
 
 - **V1P8 and VCORE** regulators offer a light load operation mode configurable 
   over i2c; this mode should be made available by the uC firmware to test its 
@@ -207,18 +197,17 @@ located on branches.
 - **V1P8 and VCORE** regulators have the output voltage programmable over i2c
   interface; this feature must be supported by the uC firmware for the system 
   performance tests and to increase power efficiency; 1% change on operating 
-  voltage leads to about 2% change in power consumption.
-	
-- **PWRCLK** signal is forwarded to the trunk interface to synchronize SMPS
-  regulators on branches; this feature may help to improve the system noise 
-  improvement.
-  
-- **CORE-MON** is a remote sense signal that provides the VCORE regulator 
-  feedback voltage directly from the microprocessor die.
-  
-- use testpoints t60 and t58 to determine VCORE load current.
+  voltage leads to about 2% change in power consumption; there are applications
+  for which these percentages count.
 
-- use testpoints t64 and t67 to determine V1P8 load current.
+- **PWRCLK** signal is forwarded to the trunk interface to synchronize SMPS
+  regulators on branches; this feature supports system noise reduction.
+  
+- **CORE-MON** is a remote sense signal from the uP die to the VCORE regulator.
+  
+- use testpoints t60 and t58 to measure VCORE load current.
+
+- use testpoints t64 and t67 to measure V1P8 load current.
 
 ***
 
@@ -226,27 +215,26 @@ located on branches.
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/V3P3_regulator.PNG)
 
 
-- **V3P3** regulator use a buck-boost converter TPS6306 that allows operation from 
-  VSYS below 3.3V.
+- **V3P3** regulator use a buck-boost converter TPS6306 that allows operation 
+  from VSYS below 3.3V.
   
 - **V3P3 and VUSB** regulators use same IC type TPS6306 and share MSYNC3M 
-  signal.
+  synchronization signal.
   
-- **V3P3 regulator** is turned ON respective to uP power-up/power-down sequence.
+- **V3P3 regulator** is turned ON according to AM3356 power-up/power-down 
+  sequence requirements.
+  
+- drive (uC) **MSYNC3M** by default with a clock signal of 2.4MHz 
+  (2.2MHz to 2.6MHz) as described in 3.2.6. to allow decreasing system noise.
   
 - drive (uC) **MSYNC3M** HIGH to turn ON the power saving mode; this mode
-  needs to be available for system testing to evaluate its contribution to 
-  overall performance.
-  
-- default: drive (uC) **MSYNC3M** with a clock signal of 2.4MHz 
-  (2.2MHz to 2.6MHz) as described in 3.2.6. to allow decreasing system noise.
+  needs to be available for evaluation.
   
 - drive (uC) **EN** HIGH to turn ON the regulator.
 
-- **VMON** signal is monitoring the V3P3 voltage - connected to uC A/D 
-  converter.  
+- **VMON** signal wired to uC A/D converter monitors the V3P3 voltage.
 
-- use test points t69 and t65 to determine V3P3 load current.
+- use test points t69 and t65 to measure V3P3 load current.
 
 ***
 
@@ -254,40 +242,39 @@ located on branches.
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VUSB_regulator.PNG)
 
 - **VUSB** regulator use a buck-boost converter TPS6306 that allows to operate
-  the USB-OTG port in host mode (requiring 5V).
+  the USB-OTG port in host mode from VSYS.
 
 - **V3P3 and VUSB** regulators use same IC type TPS6306 and share MSYNC3M 
   signal.
 
+- drive (uC) **MSYNC3M** by default with a clock signal of 2.4MHz 
+  (2.2MHz to 2.6MHz) as described in 3.2.6. to allow decreasing system noise.
+ 
 - drive (uC) **MSYNC3M** HIGH to turn ON the power saving mode; this mode
-  needs to be available for system testing to evaluate its contribution to 
-  overall performance.
+  needs to be available for evaluation.
   
-- **default: drive (uC) MSYNC3M with a 2.4MHz clock** as described in 3.2.6. 
-  to allow decreasing system noise - see 3.2.6.
-
 - drive (uC) **EN** HIGH to turn ON the regulator.
 
-- **VMON** signal is monitoring the V3P3 voltage - connected to uC A/D converter.  
+- **VMON** signal wired to uC A/D converter monitors the VUSB voltage.
 
-- use test points t69 and t65 to determine VUSB load current.
+- use test points t69 and t65 to measure VUSB load current.
 
+#### 3.2.6. Switching frequency lock for VCORE, V1P8, V3P3 and VUSB regulators:
 
-#### 3.2.6. Lock the switching frequency for VCORE, V1P8, V3P3 and VUSB regulators:
 - VSYS power rail is shared among root and all branches in a gateway; 
-  each branch that feeding from this line may introduce noise into it; this 
-  noise needs to be limited; the worst offenders are the switching mode power 
-  supplies.
+  each branch feeding from this line may introduce noise into it; this 
+  noise needs to be controlled; the worst offenders are the switching mode 
+  power supplies.
   
 - a simple method to reduce the ripple noise is to lock the 
   switching frequency of the SMPS regulators feeding from VSYS; this can be 
   done using the uC to generate the switching frequency.
   
-- the gateway design allows to control the ripple phase to avoid peak 
+- the gateway design allows to control the phase of the ripple to avoid peak 
   overlapping:
   - each branch using the PWRCLK synchronization signal should add a 47.5ns 
     delay by using an RC circuit followed by a schmitt-trigger gate supplied 
-    from VSYS to feed the PWRCLK line of the next branch.
+    from VSYS to feed the PWRCLK line for the next branch.
 
 - use the uC to generate MSYNC3M and SYNC3M from same 12MHz internal frequency:
   - divide 12MHz by 5 to generate MSYNC3M at 2.4MHz 50% duty cycle
@@ -298,22 +285,23 @@ located on branches.
 
 #### 3.2.8. Power Distribution on Trunk Connector
 
-- VSYS    distributed over A48-50; filtered with FB4(ferrite bead 220 Ohm @1ooMHz) C53(220R) and C106 (100n)
-- VSB3P3  distributed over A47
-- V3P3    distributed over  A6
-- GND     distributed over A32,A45,B5,B7,B16,B18,B20,B25-26,B38,B41,B44,B47,B50
+- VSYS    distributed over A48-50; filtered with FB4(ferrite bead 220 Ohm 
+@1ooMHz) C53(220R) and C106 (100n).
+- VSB3P3  distributed over A47.
+- V3P3    distributed over  A6.
+- GND     distributed over A32,A45,B5,B7,B16,B18,B20,B25-26,B38,B41,B44,B47,B50.
    - GND is multipurpose:
       - shared as return path for VSYS,VSB3P3,V3P3 and all digital signals 
       - shield/return path for high speed controlled impedance signals (USB)
 	  - shield/return path for high speed clocks (SPI and SDIO clocks)
 
 ### 3.3. Microprocessor:
+
 Use [AM3356BZCZA80](http://www.ti.com/product/AM3356) by TI.
 This is an ARM Cortex A-8 32bit RISC processor running at max 600MHz and 
 specified over an extended industrial temperatures range of -40C to +105C. 
 It includes two Programmable Real-Time Units (PRUs) 32-Bit RISC processors
 capable of running at 200 MHz.
-
 
 #### 3.3.1. uP Clock, Resets, JTAG and UART0 Signals:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_rst_jtag_clk_uart0.PNG)
@@ -322,10 +310,10 @@ capable of running at 200 MHz.
 - **CPU-RST** harness is connected to uC.
 
 - EMU0,1, JTAG and UART0 signals are wired only to the extension connector 
-  to support uP bring-up, development and production testing/programming.
+  to support uP bring-up and development.
 
 - Crystal Y5 (24MHz) and oscillator support components R101,R108,C116,C137 must 
-  be validated through lab experiments.
+  be optimized through lab experiments.
 
 #### 3.3.2. Power-up sequence and Booting:
 
@@ -336,16 +324,16 @@ capable of running at 200 MHz.
   - internal RTC LDO regulator is disabled.
   - VDD_CORE and VDD_MPU are supplied from VCORE rail while all other internal 
     blocks are supplied from V1P8 rail.
-  - IO buffers voltages are supplied from V3P3 or V1P8 rails:
+  - IO buffers voltages are supplied from V3P3 or V1P8 rails as following:
     - VDDSHV1,3,5 (root circuits)   = 1.8V by V1P8
 	- VDDSHV2,4,6 (branch circuits) = 3.3V by V3P3
 
 ##### 3.3.2.1. Power-up:
 
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/AM335x_powerup.PNG)
-- use timing values in the diagram with +/-20% tolerance.
-- power-down in reverse order.
-- verify 6.1.2. of [AM335x datasheet](http://www.ti.com/lit/ds/symlink/am3356.pdf) 
+- apply +/-20% tolerance to the timing values in the diagram.
+- power-up as depicted and power-down in reverse order.
+- verify chapter 6.1.2. of [AM335x datasheet](http://www.ti.com/lit/ds/symlink/am3356.pdf) 
   during the root validation.
 
 ##### 3.3.2.2. Booting:
@@ -371,16 +359,16 @@ SYSBOOT.1       LCD_DATA1     GPIO.1         PB4
 SYSBOOT.0       LCD_DATA0     GPIO.0         PC7
 ```
 - SYSBOOT signals are latched on rising edge of PWRONRSTn signal:
-  1. uC disable all drivers connected to SYSBOOT signals for the period 
+  1. uC disables all drivers connected to SYSBOOT signals for the period 
     these lines are driven by uC:
-     - assert SENn _high_ while using ADDR bus to address the branches using such 
-       drivers (see Agathis Trunk Standard for more details).
+     - assert SENn *high* while using ADDR bus to address the branches using 
+	   such drivers (see Agathis Trunk Standard for more details).
 
   2. uC drives the appropriate SYSBOOT configuration before asserting PWRONRSTn 
-     from _low_ to *high* and tri-states the SYSBOOT lines after.
+     from *low* to *high* and tri-states the SYSBOOT lines after.
     
-  3. uC enables the drivers on branches by asserting SENn _low_ while the 
-     respective branches are scanned with the ADDR bus.
+  3. uC enables the drivers on branches by asserting SENn *low* while the 
+     respective branches are scanned with the ADDR bus matching the KNOT bus.
 
 **SYSBOOT signals configuration:**
 
@@ -433,8 +421,6 @@ USB0  = USB-OTG on external J6 connector
 _     = unavailable device 
 ```
 
-
-		
 ***
 		
 #### 3.3.3. Branch Control Interfaces:
@@ -453,36 +439,44 @@ _     = unavailable device
 **uC Branch Control Diagram:**
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_branch_control.PNG)
 
-
+```
 !!!! signal name migration: **to follow Agathis Trunk Standard**:
 ENn shall change into GEn and TRIG shall change into SEn.
+```
 
-- The branch control interface is mastered by uC in Stand-By state and
-  by uP in Active State.
+- uC is master on branch control interface in **Stand-By** state. 
+
+- uP is master on branch control interface in **Active** state.
   
-- The branch control interface buffers are supplied from **VSB3P3** rail.
+- the branch control interface buffers are supplied from **VSB3P3**.
   
 - **INTGn, INTSn** signals are driven by open drain FETs on branches with 10K 
   pull-up in stand-by state and 5K pull-up in active state; the pull-ups are 
   on root.
   
-- **A0, A1, A2, GEn and SEn** are driven by uC and uP open drain drivers with
+- **ADDR.0,1,2, GEn and SEn** are driven by uC and uP open drain drivers with
   10K pull-ups on root.
 
-- first things after coming out or reset, the uC and uP shall:
-  - disable any default internal pull-ups on A0, A1, A2, GEn and SEn.
-  - drive A0, A1, A2 _low_.
+
+**!! need to rename schematic nets A0,1,2 into ADDR0,1,2 to avoid confusion 
+  with A0,1,2 i2c addressing bits !!**
+  
+- after coming out or reset, the uC and uP shall first:
+  - disable any default internal pull-ups on ADDR.0,1,2, GEn and SEn.
+  - drive *low* ADDR0,1,2.
   - tristate GEn and SEn drivers to let the pull-up to drive high.
   
-- for a glitch-less master transition between uC and uP: 
-  - drive _low_ A0, A1, and A2.
-  - preserve GEn and SEn states.
-
-- limit branch current leakage into control circuits to +/-10uA **!!!!! updated Agathis Trunk Standard for this requirement and verify pull-up resistors for worst leakage logic levels !!!!**
+- there are branches that can be up during stand-by state - this should be 
+  accounted for when designing the transition between active state (uP master) 
+  and stand-by state (uC master).
+  
+- limit branch current leakage into control circuits to +/-10uA.
+**!! need to update Agathis Trunk Standard for this requirement and verify 
+pull-up resistors for worst leakage logic levels!!**
 
 - transistors Q4-7 implement the logic level translation between V3P3 or V1P8 
   domain used by the uP buffers and VSB3P3 domain used by the uC and the 
-  branches; at the same time Q4-7 prevent back-feeding the uP buffers when 
+  branches; also, Q4-7 prevent back-feeding the uP buffers when 
   uP is powered off.
   
 
@@ -515,15 +509,15 @@ V3P3 rail**
 - SPIA and SPIB signals on root trunk connector are assigned respectively to 
   SPI0 and SPI1 of uP AM335x.
 
-- the on root is master on SPIA and SPIB buses.
+- the root is master on SPIA and SPIB.
 
 - as they propagate up the trunk, the SPIA and SPIB are swapped on every 
-  branch that use SPI; this is done to balance the load on both buses.
+  branch that use SPI; this wiring balances the total gateway capacitive 
+  loading and bandwidth.
 
-- if a branch use one SPI, it shall connect to SPIA on down-trunk connector.
+- if a branch needs one SPI, it shall take the SPIA on down-trunk connector.
 
-- if a branch use two SPI buses, it shall connect them respectively to SPIA and 
-  SPIB.
+- if a branch needs two SPIs, it shall take both SPIA and SPIB.
 
 - the number of SPI devices is limited to two per branch.
 
@@ -535,7 +529,7 @@ miso ---> SPI*.D0
 mosi ---> SPI*.D1
 ```
 
-- the root can boot from SPI device on first branch connected to SPIA.
+- the root is capable to boot from SPI device on first branch connected to SPIA.
 
 ```  
 SPI signal allocation table
@@ -556,9 +550,9 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 ```
 
 
-##### 3.3.4.2. Q.A,B,C,D
+##### 3.3.4.2. QA,B,C,D
 
-- QA,B,C,D are four quads - 4 groups of 4 uP signals
+- QA,B,C,D are four "quads" - groups of four uP signals.
 
 - a quad provides a point to point communication: root to one branch.
 
@@ -571,7 +565,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 - intra quad configuration is detailed by the AM335x datasheet, manual and 
   pinmux utility tool.
   
-- notable allocations for QA: 
+- notable allocations for root QA: 
   - uart1 (rxd,txd)
   - uart1 (rxd,txd,ctsn,rtsn)
   - dcan0 (rx,tx) 
@@ -582,26 +576,31 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   - pr1_uart0 (rxd,txd,ctsn,rtsn)
   - gpio
 
-- notable allocations for QB: 
+- notable allocations for root QB: 
   - uart4 (rxd,txd)
   - uart4 (rxd,txd,ctsn,rtsn)
   - i2c1  (sda,scl)
   - dcan1 (rx,tx)
   - gpio
 
-- notable allocations for QC: 
+- notable allocations for root QC: 
   - uart5 (rxd,txd)
   - uart5 (rxd,txd,ctsn,rtsn)
   - gpio
 
-- notable allocations for QD: 
+- notable allocations for root QD: 
   - uart3 (rxd,txd)
   - uart3 (rxd,txd,ctsn,rtsn)
   - gpio
   
 - **THE recommended allocations for QA,B,C,D are respectively uart1,4,5,3**
+  - this allocation maximizes flexibility by allowing up to 4 UART branches to 
+  be stacked together in any order and preserve access to at least one UART.
 
+- uP determines the overall connectivity map from the branch descriptors stored 
+  in each branch id eeprom.
 
+  
 ##### 3.3.4.3. SDIO
 
 - notable allocations for SDIO signals:
@@ -610,7 +609,6 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   - pr1_* (programmable real time unit subsystem)
 
 - **THE recommended allocation for SDIO is SDIO**
-
 
 ##### 3.3.4.4. GPIO.[0..11]
 
@@ -622,9 +620,6 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 - unused GPIOs are wired directly, in order, one by one, from down-trunk 
   connector to first GPIOs pins on up-trunk connector.
 
-- uP determines the overall connectivity map from the branch descriptors stored 
-  in the branch id eeprom.
-  
 - notable allocations for GPIO[0..11]
  - pr1_pru1_pru_r30_* (programmable real time unit subsystem)
  - pr1_pru1_pru_r31_* (programmable real time unit subsystem)
@@ -632,25 +627,28 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
  - lcd_data[0..7],lcd_hsync, lcd_vsync, lcd_pclk, lcd_ac_bias_en (raster 
    controller for monochrome and color STN displays)
 
-
+- uP determines the overall connectivity map from the branch descriptors stored 
+  in each branch id eeprom.
+ 
 ##### 3.3.4.5. I2C-TRUNK
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_i2c.PNG)
 
 - I2C-TRUNK root circuit is compliant with Agathis Trunk Standard. 
 
-- I2C-TRUNK uses uP as master for: 
+- I2C-TRUNK has uP as master for: 
   - card id eeprom installed on root and branches
   - uC
   - i2c devices installed on branches
 
 - uC and card id eeprom are supplied from VSB3P3 rail which is always ON; 
-  this allows uC access to the eeprom when V3P3 is down.
+  this allows uC access to the eeprom in stand-by state.
 
 - level translation and power down separation between VSB3P3 and V3P3 sides of 
-  the I2C-TRUNK is implemented with Q2A,B MOSFET:
-   - I2C signals on either side is pulled high by their respective pull-ups.
-   - I2C signals on either side cannot exceed their respective pull-up as the
-     MOSFET is turned off when the channel voltage is VSB3P3 or higher.   
+  the I2C-TRUNK are implemented with Q2A,B n-MOSFET:
+   - I2C signals on either side are pulled high by their respective pull-ups.
+   - I2C signals voltage on either side cannot exceed their respective pull-up 
+     voltage as the n-MOSFET is turned off when the channel voltage is VSB3P3 
+	 or higher.   
   
 - **I2C-TRUNK root pull-up** is:
   - 6.67K in active mode.
@@ -679,19 +677,23 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   - the root max leakage must be declared in root id eeprom hw descriptors.
   
 - **I2C-TRUNK gateway maximum number of identical i2c devices** is limited to 
-  two to the power of the number of device address pins connected to KNOT.0,1,2; 
-  these devices shall be on branches installed in a contiguous block in the 
-  gateway:
+  two to the power of the number of device address pins connected to 
+  KNOT.0,1,2; these devices shall be on branches installed in a contiguous 
+  block in the gateway:
+  
   - if A0,1,2 address bits are exposed and connected respectively to 
-    KNOT.0,1,2 then 8 modules with identical i2c devices (one each) can be used;
-    this is the particular case of the card id eeprom; other i2c with same access
-    to A2,A1,A0 address bits lead to same maximized usability.
+    KNOT.0,1,2 then 8 modules with identical i2c devices (one each) can be 
+	used; this is the particular case of the card id eeprom; other i2c with 
+	same access to A2,A1,A0 address bits lead to same maximized usability.
+  
   - if only A0,1 address bits are exposed and connected respectivelly to 
     KNOT.0,1 then 4 branches with identical i2c devices (one each) can be used;
     these branches need to be installed in a contiguous block in the gateway.
+  
   - if only A0 address bit is exposed and connected to KNOT.0, then 2 branches
     with identical i2c device (one each) can be used; these branches need to be 
     installed in a contiguous block in the gateway.
+  
   - if no address bit is exposed and connected to KNOT, then only one such
     branch per gateway is allowed.
 
@@ -708,9 +710,9 @@ SDA     PC0     H6     I2C0_SDA   C17
 
 ##### 3.3.4.6. USBA,B,C,D
 
-- these four USB device ports are USB2.0 and they are controlled by an USB hub 
-  [USB2514B](http://www.microchip.com/wwwproducts/en/USB2514B) connected 
-  up-stream to USB1 port of uP AM3356.
+- these four USB device ports are type USB2.0 and they are controlled by an 
+  USB hub [USB2514B](http://www.microchip.com/wwwproducts/en/USB2514B) 
+  connected up-stream to port USB1 of uP AM3356.
 
 ***
   
@@ -723,38 +725,40 @@ USB Hub Configuration:
 CFG_SEL[0] = 1 (SCL pu)
 CFG_SEL[1] = 0 (HS_IND pd)
 
-The hub is configured over I2C, the hub being an SMBus slave device:
+The hub is configured over I2C as an SMBus slave device:
 
 - Strap options disabled
 - All registers configured over SMBus  
 ```  
 
 - **HUBCTRL** signal harness is connected to uC
-  - **EN** signal controll the power switch
+  - **EN** signal control the power switch
   - **RSTn** resets the hub
   - **SUI** indicates the state of the hub
 
 - the power delivery to the USB devices is controlled through USBdPWR[1..4] 
-  signals that drive local USB power switches - to cut power consumption while 
-  a port is not in use.
+  signals that drive local USB power switches - to cut power consumption when
+  the port is not in use.
 
 - only permanently attached devices (embedded) can be wired to USBA,B,C,D
 
-- external USB devices shall connect through a USB hub installed on a branch.
+- external USB devices shall connect to the down-stream ports of an USB hub 
+  wired with its up-stream port to one of USBA,B,C,D; this hub shall be 
+  installed on the branch that connects to the external USB devices.
 
 ***
 
 #### 3.3.5. LPDDR Memory:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_LPDDR.PNG)
 
-- main RAM selection constraints:
+- main selection constraints for RAM device:
   - supported by up AM335x
-  - low self-refresh current consumption
+  - lowest self-refresh current consumption
   - large enough to run a Linux major distribution
 
-- use MT46H128M16LFDD LPDDR (mDDR) 128M x 16 (256MB) manufactured by Micron; 
+- use MT46H128M16LFDD LPDDR (mDDR) 128M x 16 (256MB) manufactured by Micron.
 
-- The routing of DDR signals follow the AM335x datasheet recommendations.
+- Follow the AM335x datasheet recommendations for routing the DDR signals.
 
 ***
 
@@ -767,7 +771,7 @@ The hub is configured over I2C, the hub being an SMBus slave device:
   - connected to port mmc1 on AM3356 uP using 1.8V signaling interface.
   
   - the device is operated from V3P3 and V1P8; the power supply is turned off 
-    by cutting the VSS and VSSQ lines using Q10 dual MOSFET.
+    by cutting the VSS and VSSQ lines using Q10 dual n-MOSFET.
 	
   - assert EN-eMMC (uC port PJ1, ball# D5) HIGH to turn-on the power.
   
@@ -777,23 +781,23 @@ The hub is configured over I2C, the hub being an SMBus slave device:
     are backward compatible; virtually any eMMC memory in 100Ball package 
 	should fit the design.
 	
-  - transfer speed up to 48MByte/s.
+  - maximum transfer speed: 48MByte/s.
   
-- the **SD-Card memory** use a hinge micro-SD card socket; any uSD card that 
-  meet the speed specified below should fit:
+- the **SD-Card memory** use a hinge micro-SD card socket; any uSD card should 
+  fit:
   
-  - connected to port mmc0 on AM3356 uP using 3.3V signaling interface.
+  - connected to port mmc0 on AM3356 uP and use 3.3V signaling interface.
   
   - the device is operated from V3P3; the power supply is turned off by cutting 
     the VSS line using Q13 dual MOSFET.
 
-  -	assert EN-SDCARD (uC port PE6, ball# E7) HIGH to turn-on the power.
+  -	assert *high* EN-SDCARD (uC port PE6, ball# E7)  to turn-on the power.
 	
   - see "SYSBOOT configuration" chapter for booting options.
   
-  - transfer speed in boot mode: 10MHz or up to 5MByte/s 
+  - maximum transfer speed in boot mode: 5MByte/s 
   
-  - transfer speed in normal operation: up to 24MByte/s
+  - maximum transfer speed in normal operation: 24MByte/s
   
 
 ***
@@ -809,12 +813,11 @@ The hub is configured over I2C, the hub being an SMBus slave device:
 
 ***
 
-
 - the Ethernet feature of the root module is implemented with the 3-port 
   Ethernet switch of AM3356, with one port connected, internally, to the 
-  system side and two ports connected to the external LAN connectors over 
-  two Phy transceivers KSZ8091MNX using the MII interfaces supportinging 
-  10/100Base-T.
+  system side and two ports connected to the LAN connectors over two Phy 
+  transceivers [KSZ8091MNX](http://ww1.microchip.com/downloads/en/DeviceDoc/KSZ8091MNX-RNB.pdf) 
+  using the MII interfaces supporting 10/100Base-T.
   
 - the two Ethernet ports support PoE+; the DC power is separated by the LAN 
   transformers and connected to the power module through connectors J7 and J8. 
@@ -860,7 +863,9 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 - disabled ISOLATE function
 - disabled PME output for Wake-on-LAN (overriden by SW)
 ```  
-  
+
+- the two Phy transceivers are managed by using a standard MDIO interface.
+
 ***
 
 ### 3.4. Microcontroller (uC)
@@ -879,7 +884,8 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 - the root id eeprom is MC24C32, which implements two memories at two distinct 
   i2c addresses:
   - 32 Kbyte memory at 0xAE  
-  - 32  byte id     at 0xBE - lockable
+  - 32  byte id     at 0xBE - lockable, intended to hold a factory programmable 
+  serial number.
 
 #### 3.4.3. VBUS Host Voltage Doubler
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_vbus_voltage_doubler.PNG)
@@ -888,17 +894,19 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
   power supply.
 
 - a clock in 1kHz-100kHz range generated by the uC on **DBLR-CLK** line should
-  produce a DC voltage about 5V needed by the sensing circuit in the AM3356.
+  produce a DC voltage about 5V needed by the sensing circuit in the AM3356; 
+  the circuit needs to be optimized during validation.
 
 #### 3.4.4. I2C-MCU bus
 
-- This is the uC i2c bus that controlls a number of devices as listed below.
+- This is the i2c bus used by uC to controll a number of devices as listed 
+  below.
 
-- This i2c bus operates at 400kHZ and is I2C Fast Mode compliant.
+- I2C-MCU operates at 400kHZ and is I2C Fast Mode compliant.
 
-- This bus connects as well to the power module where other devices may be 
+- This bus is connected as well to the power module where other devices may be 
   connected; power module design is responsible to avoid any i2c addressing
-  issues.
+  issues and maintain compliance with I2C Fast Mode (400kHz operation).
 
 
 ```
@@ -925,74 +933,77 @@ FAN5355UC03X (VCORE): 0x94
 
 The schematic details the resistor stuffing for the above three options.
 
-- the TPM devices is connected to uC over i2c and a number of up to 5 
+- the TPM device is connected to uC over I2C-MCU and a number of up to 5 
   configurable IOs.
-
 
 #### 3.4.6. Crypto Authentication:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/Crypto_auth.PNG)
 
-- a crypto authentication solution can be implemented using one of the [options](http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-8756-ATSHA204A-ATAES132A-ATECC108A-ATECC508A-Flyer-E.pdf):
+- a crypto authentication solution is implemented using one of the following 
+  [options](http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-8756-ATSHA204A-ATAES132A-ATECC108A-ATECC508A-Flyer-E.pdf):
   - ATSHA204A
   - ATAES132A
   - ATECC508A (default installation)
 
+#### 3.4.7. TRIGIO
+- this is a trigger line that can be used by the gateway for real time 
+applications where a synchronization is desired among some or all of the 
+modules.
+- TRIGIO on root is wired on latest release to uC only; there is a plan to wire 
+it as well to uP in next hw release.  
+  
 ***
 
-
-### USB Switch
+### 3.5. USB Switch
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/usb_switch.PNG)
 
 - When the root needs to be the device for an USB host connected to USB-OTG 
-  port, a hw switch connects the host firstly to the uC to run an 
-  authentication test; only after passing the test, the host is connected to 
-  the uP. 
-
+  port, a hw switch connects the host to the uC USB port to run an 
+  authentication verification; after passing the test, the host is switched to 
+  the uP USB (USB0 of AM3356).
 
 ***
 
-### Trunk Connector:
+
+### 3.6. Trunk Connector:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/Trunk_connector.PNG)
 
 ***
 
-### Test Extension Connector:
+### 3.7. Test Extension Connector:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/Test_extension_card_connector.PNG)
 
-## Schematic 
+### 3.8. Schematic 
 [The schematic](https://github.com/agathis-project/salix-arctica/blob/master/v1/SCH-1-1-1.pdf)
 for this design was captured in Altium and is available as pdf and project 
 file package in v1 folder of this repo.
 
 
-## Layout
+### 3.9. Layout
 The layout for this design was done in Altium.
-See V1 folder in the repo.
+See v1 folder.
 
-## Mechanicals
-- see embedded stacked enclosure
+### 3.10. Mechanicals
+- tbd
 
-## Prototype
-- include manufacturing details such as BOM, pcb ordering package, pca ordering package
+### 3.11. Prototype
+- tbd
 
-## Verification
-- board bring-up
-- interfaces test plan and report
-- bug report
+### 3.12. Validation
+- tbd
 
-## Integration
-### EMC Compliance Test Plan
-### Safety Test Plan
-### Hazardous Materials Control Plan
+### 3.13. Integration
+#### 3.13.1. EMC Compliance Test Plan
+#### 3.13.2. Safety Test Plan
+#### 3.13.3. Hazardous Materials Control Plan
 
-### 
-- compliance test plan and report
-- interoperability test plan and report (power module, test extension card, branch modules)
+## 4. References
+-tbd
 
-## License
+## 5. License
 This design is licensed under the terms of the TAPR.
 The terms of the license are available in the LICENSE.TXT file included in the 
 repository.
 
-
-## Attachments
+## 6. Attachments
+- see AP-1 folder (too long to add it here)
