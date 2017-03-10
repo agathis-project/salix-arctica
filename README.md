@@ -65,7 +65,7 @@ things over media interfaces located on branches.
 
 - strong preference for devices with full datasheet and free online support.
 
-- root target size excluding connectors - 85 square mm.
+- root target size excluding connectors: 85 square mm.
 
 - trunk connector using controlled impedance technology to support speeds
   higher than 5Gbps per differential line.
@@ -138,7 +138,7 @@ things over media interfaces located on branches.
 
   3. **USB-OTG** connector on root (service only).
 
-- power module does the primary conversion, storage and distribution.
+- Power module does the primary conversion, storage and distribution.
 
 - **VSYS** serves as bulk power distributed to the entire gateway.
 
@@ -160,9 +160,9 @@ things over media interfaces located on branches.
 #### 3.2.3. VCORE and V1P8 Regulator:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/VCORE_and_V1P8_regulators.PNG)
 
-- **V1P8** rail supplies uP, LPDDR, eMMC, Ethernet Phy.
+- **V1P8** rail supplies uP, LPDDR, eMMC, ETH PHY.
 
-- **VCORE** rail supplies uP (V_CORE and V_MPU of AM3356 wired together)
+- **VCORE** rail supplies uP (V_CORE and V_MPU of AM3356 wired together).
 
 - **V1P8 and VCORE** regulators feed from VSYS through FB5, C48, C54 filters.
 
@@ -277,15 +277,15 @@ things over media interfaces located on branches.
     from VSYS to feed the PWRCLK line for the next branch.
 
 - use the uC to generate MSYNC3M and SYNC3M from same 12MHz internal frequency:
-  - divide 12MHz by 5 to generate MSYNC3M at 2.4MHz 50% duty cycle
-  - divide 12MHz by 4 to generate SYNC3M at 3MHz 50% duty cycle
+  - divide 12MHz by 5 to generate MSYNC3M at 2.4MHz 50% duty cycle.
+  - divide 12MHz by 4 to generate SYNC3M at 3MHz 50% duty cycle.
 
 #### 3.2.7. Power Module Power and PoE Connectors
 - connector J9 delivers:
-  - VSYS power rail into root module
-  - VSB3P3 standby voltage rail into power module
-  - I2C-MCU bus to control the power module
-  - PINTn interrupt signal from power module
+  - VSYS power rail into root module.
+  - VSB3P3 standby voltage rail into power module.
+  - I2C-MCU bus to control the power module.
+  - PINTn interrupt signal from power module.
   - VPIN power from USB-OTG port to feed the gateway in service mode.
 
 - connectors J7 and J8 deliver the power to/from PoE PSE (Power Supply
@@ -293,15 +293,15 @@ Equipment) or PD (Powered Device) circuits on power module.
 
 #### 3.2.8. Power Distribution on Trunk Connector
 
-- VSYS    distributed over A48-50; filtered with FB4(ferrite bead 220 Ohm
-@100MHz) C53(220R) and C106 (100n).
+- VSYS    distributed over A48-50; filtered with FB4 (ferrite bead 220R@100MHz)
+C53 (10u) and C106 (100n).
 - VSB3P3  distributed over A47.
 - V3P3    distributed over A6.
 - GND     distributed over A32,A45,B5,B7,B16,B18,B20,B25-26,B38,B41,B44,B47,B50.
    - GND is multipurpose:
-      - shared as return path for VSYS,VSB3P3,V3P3 and all digital signals
-      - shield/return path for high speed controlled impedance signals (USB)
-    - shield/return path for high speed clocks (SPI and SDIO clocks)
+      - shared as return path for VSYS,VSB3P3,V3P3 and all digital signals.
+      - shield/return path for high speed controlled impedance signals (USB).
+      - shield/return path for high speed clocks (SPI and SDIO clocks).
 
 ### 3.3. Microprocessor:
 
@@ -330,11 +330,11 @@ capable of running at 200 MHz.
 - uP power configuration:
   - internal RTC block is disabled (use uC for RTC apps).
   - internal RTC LDO regulator is disabled.
-  - VDD_CORE and VDD_MPU are supplied from VCORE rail while all other internal
+  - VDD_CORE and VDD_MPU are supplied from VCORE rail while all other internal.
     blocks are supplied from V1P8 rail.
   - IO buffers voltages are supplied from V3P3 or V1P8 rails as following:
-    - VDDSHV1,3,5 (root circuits)   = 1.8V by V1P8
-  - VDDSHV2,4,6 (branch circuits) = 3.3V by V3P3
+    - VDDSHV1,3,5 (root circuits) = 1.8V by V1P8.
+    - VDDSHV2,4,6 (branch circuits) = 3.3V by V3P3.
 
 ##### 3.3.2.1. Power-up:
 
@@ -366,6 +366,7 @@ SYSBOOT.2       LCD_DATA2     GPIO.2         PB6
 SYSBOOT.1       LCD_DATA1     GPIO.1         PB4
 SYSBOOT.0       LCD_DATA0     GPIO.0         PC7
 ```
+
 - SYSBOOT signals are latched on rising edge of PWRONRSTn signal:
   1. uC disables all drivers connected to SYSBOOT signals for the period
     these lines are driven by uC:
@@ -381,11 +382,11 @@ SYSBOOT.0       LCD_DATA0     GPIO.0         PC7
 **SYSBOOT signals configuration:**
 
 ```
-SYSBOOT.15,14      fixed              01 == 24MHz (crystal frequency)
+SYSBOOT.15,14       fixed              01 == 24MHz (crystal frequency)
 SYSBOOT.13,12       fixed              00 == mandatory by specs
 SYSBOOT.11,10,9,8   don't care       XXXX == not controlled by uC
 SYSBOOT.7,6         fixed:             00 == select MII for EMAC1
-SYSBOOT.5          fixed:          0 == CLK1 OUT disabled
+SYSBOOT.5           fixed:          0 == CLK1 OUT disabled
 SYSBOOT.4,3,2,1,0   configurable:   00001 == UART0,_,MMC0,SPI0
                                      00010 == UART0,SPI0,_,_
                                      00011 == UART0,_,_,MMC0
@@ -441,7 +442,6 @@ _     = unavailable device
 **uP Branch Control Diagram:**
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_branch_control.PNG)
 
-
 ***
 
 **uC Branch Control Diagram:**
@@ -478,6 +478,7 @@ ENn shall change into GEn and TRIG shall change into SEn.
   and stand-by state (uC master).
 
 - limit branch current leakage into control circuits to +/-10uA.
+
 **!! need to update Agathis Trunk Standard for this requirement and verify
 pull-up resistors for worst leakage logic levels!!**
 
@@ -603,7 +604,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   be stacked together in any order and preserve access to at least one UART.
 
 - uP determines the overall connectivity map from the branch descriptors stored
-  in each branch id eeprom.
+  in each branch id EEPROM.
 
 ##### 3.3.4.3. SDIO
 
@@ -622,15 +623,15 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 - unused GPIOs are wired directly, in order, one by one, from down-trunk
   connector to first GPIOs pins on up-trunk connector.
 
-- notable allocations for GPIO[0..11]
- - pr1_pru1_pru_r30_* (programmable real time unit subsystem)
- - pr1_pru1_pru_r31_* (programmable real time unit subsystem)
- - gpio2_* (ARM)
- - lcd_data[0..7],lcd_hsync, lcd_vsync, lcd_pclk, lcd_ac_bias_en (raster
-   controller for monochrome and color STN displays)
+- notable allocations for GPIO[0..11]:
+  - pr1_pru1_pru_r30_* (programmable real time unit subsystem).
+  - pr1_pru1_pru_r31_* (programmable real time unit subsystem).
+  - gpio2_* (ARM).
+  - lcd_data[0..7],lcd_hsync, lcd_vsync, lcd_pclk, lcd_ac_bias_en (raster
+    controller for monochrome and color STN displays).
 
 - uP determines the overall connectivity map from the branch descriptors stored
-  in each branch id eeprom.
+  in each branch id EEPROM.
 
 ##### 3.3.4.5. I2C-TRUNK
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_I2C.PNG)
@@ -638,12 +639,12 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 - I2C-TRUNK root circuit is compliant with Agathis Trunk Standard.
 
 - I2C-TRUNK has uP as master for:
-  - card id eeprom installed on root and branches
+  - card id EEPROM installed on root and branches
   - uC
   - I2C devices installed on branches
 
-- uC and card id eeprom are supplied from VSB3P3 rail which is always ON;
-  this allows uC access to the eeprom in stand-by state.
+- uC and card id EEPROM are supplied from VSB3P3 rail which is always ON;
+  this allows uC access to the EEPROM in stand-by state.
 
 - level translation and power down separation between VSB3P3 and V3P3 sides of
   the I2C-TRUNK are implemented with Q2A,B n-MOSFET:
@@ -657,11 +658,11 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   - 20K in stand-by.
 
 - **I2C-TRUNK root maximum parasitic capacitance is 52pF**; this is made of 4pF
-  (uP) + 8pF (eeprom) + 10pF (uC) +  25pF (PCB) + 5pF (connector);
+  (uP) + 8pF (EEPROM) + 10pF (uC) +  25pF (PCB) + 5pF (connector);
   - this parasitic capacitance requires a maximum pull-up resistance of
     352K/52 = 6.77K; this resistance is build using one 10K resistor on uP side
   and 20K on uC side.
-  - the root parasitic capacitance must be declared in root id eeprom hw
+  - the root parasitic capacitance must be declared in root id EEPROM hw
     descriptors.
   - the PCB parasitic capacitance is a major contributor and needs to be
     qualified during root hardware validation (measure the PCB parasitic
@@ -672,11 +673,11 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   drive can drive without exceeding the standard minimum logic level.
 
 - **I2C-TRUNK root maximum leakage current is 30uA**; this is made of 18uA (uP)
-  + 2uA (eeprom) + 10uA (uC); this current will cause a maximum 0.2V voltage
+  + 2uA (EEPROM) + 10uA (uC); this current will cause a maximum 0.2V voltage
   drop on 6.77K pull-up resistance, which will lead to a VIH = V3P3min - 0.2V
   = 3V which is higher than VIHmin = 0.7 x V3P3min = 2.24V with a margin of
   0.76V.
-  - the root max leakage must be declared in root id eeprom hw descriptors.
+  - the root max leakage must be declared in root id EEPROM hw descriptors.
 
 - **I2C-TRUNK gateway maximum number of identical I2C devices** is limited to
   two to the power of the number of device address pins connected to
@@ -685,7 +686,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 
   - if A0,1,2 address bits are exposed and connected respectively to
     KNOT.0,1,2 then 8 modules with identical I2C devices (one each) can be
-  used; this is the particular case of the card id eeprom; other I2C with
+  used; this is the particular case of the card id EEPROM; other I2C with
   same access to A2,A1,A0 address bits lead to same maximized usability.
 
   - if only A0,1 address bits are exposed and connected respectivelly to
@@ -770,7 +771,7 @@ The hub is configured over I2C as an SMBus slave device:
 - the **eMMC memory** is a 8GB flash MTFC8GACAANA-4M IT by Micron; it
   integrates a MultiMediaCard and NAND Flash in a 100-Ball package:
 
-  - connected to port mmc1 on AM3356 uP using 1.8V signaling interface.
+  - connected to port MMC1 on AM3356 uP using 1.8V signaling interface.
 
   - the device is operated from V3P3 and V1P8; the power supply is turned off
     by cutting the VSS and VSSQ lines using Q10 dual n-MOSFET.
@@ -793,7 +794,7 @@ The hub is configured over I2C as an SMBus slave device:
   - the device is operated from V3P3; the power supply is turned off by cutting
     the VSS line using Q13 dual MOSFET.
 
-  -  assert *high* EN-SDCARD (uC port PE6, ball# E7)  to turn-on the power.
+  - assert *high* EN-SDCARD (uC port PE6, ball# E7)  to turn-on the power.
 
   - see "SYSBOOT configuration" chapter for booting options.
 
@@ -801,48 +802,49 @@ The hub is configured over I2C as an SMBus slave device:
 
   - maximum transfer speed in normal operation: 24MByte/s
 
-
 ***
 
 #### 3.3.7. Ethernet:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_mii.PNG)
 
 ***
+
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/eth_phy.PNG)
 
 ***
+
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/eth_mag.PNG)
 
 ***
 
 - the Ethernet feature of the root module is implemented with the 3-port
   Ethernet switch of AM3356, with one port connected, internally, to the
-  system side and two ports connected to the LAN connectors over two Phy
+  system side and two ports connected to the LAN connectors over two PHY
   transceivers [KSZ8091MNX](http://ww1.microchip.com/downloads/en/DeviceDoc/KSZ8091MNX-RNB.pdf)
   using the MII interfaces supporting 10/100Base-T.
 
 - the two Ethernet ports support PoE+; the DC power is separated by the LAN
   transformers and connected to the power module through connectors J7 and J8.
 
-- the Phy transceivers KSZ8091MNX provide several power reduction features:
+- the PHY transceivers KSZ8091MNX provide several power reduction features:
   - power-saving mode
   - energy-detect power-down mode
   - power-down mode
   - slow-oscillator mode
   - Energy Efficient Ethernet (EEE)
-    - to implement EEE directive for the *MAC to Phy* direction, the TXER, TXEN
+    - to implement EEE directive for the *MAC to PHY* direction, the TXER, TXEN
     and TXD[3:0] must be controlled by the SW; the AM3356's MAC does not
     support EEE.
-    - to implement EEE directive for the *Phy to MAC* direction, the RXDV, RXER
+    - to implement EEE directive for the *PHY to MAC* direction, the RXDV, RXER
     and RXD[3:0] must be monitored by the SW; the AM3356's MAC does not
     support EEE.
   - Wake-On-LAN
 
-- the Phy transceivers can be turned-off completely by uC asserting *low*
+- the PHY transceivers can be turned-off completely by uC asserting *low*
   the EN signal.
 
 - the uC monitors the nINT line that can be programmed to transmit a variety of
-  Phy events.
+  PHY events.
 
 ```
 KSZ8091MNX Straping Options:
@@ -866,7 +868,7 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 - disabled PME output for Wake-on-LAN (overridden by SW)
 ```
 
-- the two Phy transceivers are managed by using a standard MDIO interface.
+- the two PHY transceivers are managed by using a standard MDIO interface.
 
 ***
 
@@ -881,9 +883,9 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 - uC reset is embedded; there are no external features.
 
 #### 3.4.2. Root ID Eeprom
-![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_card_id_eeprom.PNG)
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_card_id_EEPROM.PNG)
 
-- the root id eeprom is MC24C32, which implements two memories at two distinct
+- the root id EEPROM is MC24C32, which implements two memories at two distinct
   I2C addresses:
   - 32 Kbyte memory at 0xAE
   - 32  byte id     at 0xBE - lockable, intended to hold a factory programmable,
@@ -920,12 +922,14 @@ AT97SC3205T         : 0x28
 FAN5355UC03X (V1P8) : 0x90
 FAN5355UC03X (VCORE): 0x94
 ```
+
 ***
 
 #### 3.4.5. Trusted Platform Module:
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/tpm.PNG)
 
 ***
+
 - the TPM solution can be implemented with one of the following devices:
   - [AT97SC3205T](http://www.microchip.com/wwwproducts/en/AT97sc3205t) (by Microchip/Atmel) - installed by default.
   - [ST19NP18](http://www.st.com/content/ccc/resource/technical/document/data_brief/7e/15/02/2a/e9/bd/4b/eb/DM00039181.pdf/files/DM00039181.pdf/jcr:content/translations/en.DM00039181.pdf)    (by STMicro)
@@ -957,7 +961,7 @@ it as well to uP in next hw release.
 ### 3.5. USB Switch
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/usb_switch.PNG)
 
-- When the root needs to be the device for an USB host connected to USB-OTG
+- when the root needs to be the device for an USB host connected to USB-OTG
   port, a hw switch(U22) connects the host to the uC USB port to run the
   authentication; after passing the test, the host is switched to
   the uP USB (USB0 of AM3356).
@@ -982,10 +986,9 @@ it as well to uP in next hw release.
 for this design was captured in Altium and is available as pdf and project
 file package in v1 folder of this repo.
 
-
 ### 3.9. Layout
 The layout for this design was done in Altium.
-See v1 folder.
+See [v1](https://github.com/agathis-project/salix-arctica/blob/master/v1) folder.
 
 ### 3.10. Mechanicals
 - tbd
@@ -1010,4 +1013,4 @@ The terms of the license are available in the LICENSE.TXT file included in the
 repository.
 
 ## 6. Attachments
-- see AP-1 folder (too long to add it here)
+- see [AP-1](https://github.com/agathis-project/salix-arctica/blob/master/AP-1) folder
