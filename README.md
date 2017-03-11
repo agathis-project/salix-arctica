@@ -105,7 +105,8 @@ things over media interfaces located on branches.
   time is more precious.
 
 - hardware power states:
-  **power-down**
+
+  **power-down:**
   - VSB3P3 below minimum level to safely operate the uC; the uC monitors the
     availability of the system power and always does a graceful shut-down
     of all devices before the voltage supply goes critical.
@@ -131,11 +132,8 @@ things over media interfaces located on branches.
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/TreePowerDistribution.PNG)
 
 - The gateway can be powered through:
-
   1. **DC input** connector on power module.
-
   2. **LAN Port #1 or #2** configured as PoE Powered Device.
-
   3. **USB-OTG** connector on root (service only).
 
 - Power module does the primary conversion, storage and distribution.
@@ -294,16 +292,22 @@ Equipment) or PD (Powered Device) circuits on power module.
 
 #### 3.2.8. Power Distribution on Trunk Connector
 
-  - VSYS    distributed over A48-50; filtered with FB4 (ferrite bead 220R@100MHz)
-  C53 (10u) and C106 (100n).
-  - VSB3P3  distributed over A47.
-  - V3P3    distributed over A6.
-  - GND     distributed over A32,A45,B5,B7,B16,B18,B20,B25-26,B38,B41,B44,B47,B50.
+- VSYS    distributed over A48-50; filtered with FB4 (ferrite bead 220R@100MHz)
+C53 (10u) and C106 (100n).
+
+- VSB3P3  distributed over A47.
+
+- V3P3    distributed over A6.
+
+- GND     distributed over A32,A45,B5,B7,B16,B18,B20,B25-26,B38,B41,B44,B47,B50.
 
 GND is multipurpose:
-  - shared as return path for VSYS,VSB3P3,V3P3 and all digital signals.
-  - shield/return path for high speed controlled impedance signals (USB).
-  - shield/return path for high speed clocks (SPI and SDIO clocks).
+
+- shared as return path for VSYS,VSB3P3,V3P3 and all digital signals.
+
+- shield/return path for high speed controlled impedance signals (USB).
+
+- shield/return path for high speed clocks (SPI and SDIO clocks).
 
 ### 3.3. Microprocessor:
 
@@ -340,10 +344,12 @@ capable of running at 200 MHz.
     - VDDSHV2,4,6 (branch circuits) = 3.3V by V3P3.
 
 ##### 3.3.2.1. Power-up:
-
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/AM335x_powerup.PNG)
+
 - apply +/-20% tolerance to the timing values in the diagram.
+
 - power-up as depicted and power-down in reverse order.
+
 - verify chapter 6.1.2. of [AM335x datasheet](http://www.ti.com/lit/ds/symlink/am3356.pdf)
   during the root validation.
 
@@ -375,52 +381,50 @@ SYSBOOT.0       LCD_DATA0     GPIO.0         PC7
     these lines are driven by uC:
      - assert SENn *high* while using ADDR bus to address the branches using
      such drivers (see Agathis Trunk Standard for more details).
-
   2. uC drives the appropriate SYSBOOT configuration before asserting PWRONRSTn
      from *low* to *high* and tri-states the SYSBOOT lines after.
-
   3. uC enables the drivers on branches by asserting SENn *low* while the
      respective branches are scanned with the ADDR bus matching the KNOT bus.
 
 **SYSBOOT signals configuration:**
 
 ```
-SYSBOOT.15,14       fixed              01 == 24MHz (crystal frequency)
-SYSBOOT.13,12       fixed              00 == mandatory by specs
-SYSBOOT.11,10,9,8   don't care       XXXX == not controlled by uC
-SYSBOOT.7,6         fixed:             00 == select MII for EMAC1
+SYSBOOT.15,14       fixed           01 == 24MHz (crystal frequency)
+SYSBOOT.13,12       fixed           00 == mandatory by specs
+SYSBOOT.11,10,9,8   don't care      XXXX == not controlled by uC
+SYSBOOT.7,6         fixed:          00 == select MII for EMAC1
 SYSBOOT.5           fixed:          0 == CLK1 OUT disabled
 SYSBOOT.4,3,2,1,0   configurable:   00001 == UART0,_,MMC0,SPI0
-                                     00010 == UART0,SPI0,_,_
-                                     00011 == UART0,_,_,MMC0
-                                     00100 == UART0,_,MMC0,_,_
-                                     00101 == UART0,_,SPI0,_
-                                     00110 == EMAC1,SPI0,_,_
-                                     00111 == EMAC1,MMC0,_,_
-                                     01000 == EMAC1,MMC0,_,_
-                                     01001 == EMAC1,_,_,MMC0
-                                     01010 == EMAC1,_,_SPI0
-                                     01011 == USB0,_,SPI0,MMC0
-                                     01100 == USB0,_,_,_
-                                     01101 == USB0,_,_,SPI0
-                                     01110 == RESERVED
-                                     01111 == UART0,EMAC1,_,_
-                                     10000 == _,UART0,EMAC1,MMC0
-                                     10001 == _,UART0,EMAC1,MMC0
-                                     10010 == _,_,USB0,UART0
-                                     10011 == _,_,MMC0,UART0
-                                     10100 == _,_,SPI0,EMAC1
-                                     10101 == _,MMC0,EMAC1,UART0
-                                     10110 == SPI0,MMC0,UART0,EMAC1
-                                     10111 == MMC0,SPI0,UART0,USB0
-                                     11000 == SPI0,MMC0,USB0,UART0
-                                     11001 == SPI0,MMC0,EMAC1,UART0
-                                     11010 == _,UART0,SPI0,MMC0
-                                     11011 == _,UART0,SPI0,MMC0
-                                     11100 == MMC1,MMC0,UART0,USB0
-                                     11101 == RESERVED
-                                     11110 == RESERVED
-                                     11111 == _,EMAC1,UART0,_
+                                    00010 == UART0,SPI0,_,_
+                                    00011 == UART0,_,_,MMC0
+                                    00100 == UART0,_,MMC0,_,_
+                                    00101 == UART0,_,SPI0,_
+                                    00110 == EMAC1,SPI0,_,_
+                                    00111 == EMAC1,MMC0,_,_
+                                    01000 == EMAC1,MMC0,_,_
+                                    01001 == EMAC1,_,_,MMC0
+                                    01010 == EMAC1,_,_SPI0
+                                    01011 == USB0,_,SPI0,MMC0
+                                    01100 == USB0,_,_,_
+                                    01101 == USB0,_,_,SPI0
+                                    01110 == RESERVED
+                                    01111 == UART0,EMAC1,_,_
+                                    10000 == _,UART0,EMAC1,MMC0
+                                    10001 == _,UART0,EMAC1,MMC0
+                                    10010 == _,_,USB0,UART0
+                                    10011 == _,_,MMC0,UART0
+                                    10100 == _,_,SPI0,EMAC1
+                                    10101 == _,MMC0,EMAC1,UART0
+                                    10110 == SPI0,MMC0,UART0,EMAC1
+                                    10111 == MMC0,SPI0,UART0,USB0
+                                    11000 == SPI0,MMC0,USB0,UART0
+                                    11001 == SPI0,MMC0,EMAC1,UART0
+                                    11010 == _,UART0,SPI0,MMC0
+                                    11011 == _,UART0,SPI0,MMC0
+                                    11100 == MMC1,MMC0,UART0,USB0
+                                    11101 == RESERVED
+                                    11110 == RESERVED
+                                    11111 == _,EMAC1,UART0,_
 
 Legend:
 =======
@@ -579,8 +583,8 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   - uart1 (rxd,txd,ctsn,rtsn)
   - dcan0 (rx,tx)
   - dcan1 (rx,tx)
-  - I2C1  (sda,scl)
-  - I2C2  (sda,scl)
+  - i2c1  (sda,scl)
+  - i2c2  (sda,scl)
   - pr1_uart0 (rxd,txd)
   - pr1_uart0 (rxd,txd,ctsn,rtsn)
   - gpio
@@ -588,7 +592,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 - notable allocations for root QB:
   - uart4 (rxd,txd)
   - uart4 (rxd,txd,ctsn,rtsn)
-  - I2C1  (sda,scl)
+  - i2c1  (sda,scl)
   - dcan1 (rx,tx)
   - gpio
 
@@ -764,7 +768,7 @@ The hub is configured over I2C as an SMBus slave device:
 
 - use MT46H128M16LFDD LPDDR (mDDR) 128M x 16 (256MB) manufactured by Micron.
 
-- Follow the AM335x datasheet recommendations for routing the DDR signals.
+- follow the AM335x datasheet recommendations for routing the DDR signals.
 
 ***
 
@@ -773,36 +777,24 @@ The hub is configured over I2C as an SMBus slave device:
 
 - the **eMMC memory** is a 8GB flash MTFC8GACAANA-4M IT by Micron; it
   integrates a MultiMediaCard and NAND Flash in a 100-Ball package:
-
   - connected to port MMC1 on AM3356 uP using 1.8V signaling interface.
-
   - the device is operated from V3P3 and V1P8; the power supply is turned off
     by cutting the VSS and VSSQ lines using Q10 dual n-MOSFET.
-
   - assert EN-eMMC (uC port PJ1, ball# D5) HIGH to turn-on the power.
-
   - the hardware reset is not used - use power-up and software reset instead.
-
   - AM335x microprocessors support MMC4.3; later versions of the MMC standard
     are backward compatible; virtually any eMMC memory in 100Ball package
-  should fit the design.
-
+    should fit the design.
   - maximum transfer speed: 48MByte/s.
 
 - the **SD-Card memory** use a hinge micro-SD card socket; any uSD card should
   fit:
-
   - connected to port mmc0 on AM3356 uP and use 3.3V signaling interface.
-
   - the device is operated from V3P3; the power supply is turned off by cutting
     the VSS line using Q13 dual MOSFET.
-
   - assert *high* EN-SDCARD (uC port PE6, ball# E7)  to turn-on the power.
-
   - see "SYSBOOT configuration" chapter for booting options.
-
   - maximum transfer speed in boot mode: 5MByte/s
-
   - maximum transfer speed in normal operation: 24MByte/s
 
 ***
@@ -882,7 +874,9 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 
 - the uC is supplied with VSB3P from a low quiescent current(typ 1uA)voltage
   regulator RT9073.
+
 - uC use crystal Y4 to generate 32.768kHz internal clock.
+
 - uC reset is embedded; there are no external features.
 
 #### 3.4.2. Root ID EEPROM
@@ -906,12 +900,12 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 
 #### 3.4.4. I2C-MCU bus
 
-- This is the I2C bus used by uC to control a number of devices as listed
+- this is the I2C bus used by uC to control a number of devices as listed
   below.
 
 - I2C-MCU operates at 400kHz and is I2C Fast Mode compliant.
 
-- This bus is connected as well to the power module where other devices may be
+- this bus is connected as well to the power module where other devices may be
   connected; power module design is responsible to avoid any I2C addressing
   issues and maintain compliance with I2C Fast Mode.
 
@@ -957,6 +951,7 @@ The schematic details the resistor stuffing for the above three options.
 - this is a trigger line that can be used by the gateway for real time
 applications where a synchronization is desired among some or all of the
 modules.
+
 - TRIGIO on root is wired on latest release to uC only; there is a plan to wire
 it as well to uP in next hw release.
 
@@ -971,8 +966,11 @@ it as well to uP in next hw release.
   the uP USB (USB0 of AM3356).
 
 - harness **USB0** is wired to uP.
+
 - harness **USB-MCU** is wired to uC.
+
 - harness **USB-SW-CTRL** is wired to uC.
+
 - harness **USB-CONN** is wired to USB-OTG connector.
 
 ***
