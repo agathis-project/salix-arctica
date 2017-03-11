@@ -85,7 +85,7 @@ things over media interfaces located on branches.
 
 - support PoE operation as Powered Device and/or Power Supply Equipment.
 
-- capable to run a main stream Linux distribution.
+- capable to run a mainstream Linux distribution.
 
 - include Trusted Platform Module and Crypto-Authentication hardware solutions.
 
@@ -105,23 +105,23 @@ things over media interfaces located on branches.
   time is more precious.
 
 - hardware power states:
-  - **power-down**
+  **power-down**
   - VSB3P3 below minimum level to safely operate the uC; the uC monitors the
     availability of the system power and always does a graceful shut-down
     of all devices before the voltage supply goes critical.
 
-  - **stand-by:**
-    - VSB3P3 is at a safe operating level.
-    - uC monitors its internal real time clock and trunk interface for a
+  **stand-by:**
+  - VSB3P3 is at a safe operating level.
+  - uC monitors its internal real time clock and trunk interface for a
   wake-up/interrupt event.
   - V3P3, V1P8 and VCORE regulators are turned off (uP and its external
   interfaces are powered down).
   - uC monitor VSYS to detect passing the **power-down** threshold and enter
   **power-down** state.
-    - battery reserve is monitored and used for power management.
+  - battery reserve is monitored and used for power management.
 
-  - **active:**
-    - uP is operational and controls its data traffic with branch modules.
+  **active:**
+  - uP is operational and controls its data traffic with branch modules.
   - all unused interfaces are turned off.
   - battery reserve is monitored and used for power management.
 
@@ -178,15 +178,15 @@ things over media interfaces located on branches.
    programmable over I2C, using **VSEL** signal, which must be asserted *low*
    at power-up:
 
-   - this feature can be used to change the uP operating power points (OPP).
+  - this feature can be used to change the uP operating power.
 
-   - default output voltage for **VSEL = "low" is 1.05V** and can
-     be used as such for the initial power-up of the uP.
+  - default output voltage for **VSEL = "low" is 1.05V** and can
+    be used as such for the initial power-up of the uP.
 
-   - default output voltage for **VSEL = "high" is 1.2V and MUST
-     BE ADJUSTED** before use; if there is no need to switch the output
-     voltage during normal operation, then the second voltage must be set to
-   same value as first (safe operation).
+  - default output voltage for **VSEL = "high" is 1.2V and MUST
+    BE ADJUSTED** before use; if there is no need to switch the output
+    voltage during normal operation, then the second voltage must be set to
+    same value as first (safe operation).
 
 - **V1P8 and VCORE** regulators are enabled by the **EN-VCORE and EN-V1P8**
   signals driven by the uC.
@@ -206,9 +206,9 @@ things over media interfaces located on branches.
 
 - **CORE-MON** is a remote sense signal from the uP die to the VCORE regulator.
 
-- use testpoints t60 and t58 to measure VCORE load current.
+- use testpoints T60 and T58 to measure VCORE load current.
 
-- use testpoints t64 and t67 to measure V1P8 load current.
+- use testpoints T64 and T67 to measure V1P8 load current.
 
 ***
 
@@ -234,7 +234,7 @@ things over media interfaces located on branches.
 
 - **VMON** signal wired to uC A/D converter monitors the V3P3 voltage.
 
-- use test points t69 and t65 to measure V3P3 load current.
+- use test points T69 and T65 to measure V3P3 load current.
 
 ***
 
@@ -257,7 +257,7 @@ things over media interfaces located on branches.
 
 - **VMON** signal wired to uC A/D converter monitors the VUSB voltage.
 
-- use test points t69 and t65 to measure VUSB load current.
+- use test points T69 and T65 to measure VUSB load current.
 
 #### 3.2.6. Switching frequency lock for VCORE, V1P8, V3P3 and VUSB regulators:
 
@@ -281,6 +281,7 @@ things over media interfaces located on branches.
   - divide 12MHz by 4 to generate SYNC3M at 3MHz 50% duty cycle.
 
 #### 3.2.7. Power Module Power and PoE Connectors
+
 - connector J9 delivers:
   - VSYS power rail into root module.
   - VSB3P3 standby voltage rail into power module.
@@ -293,15 +294,16 @@ Equipment) or PD (Powered Device) circuits on power module.
 
 #### 3.2.8. Power Distribution on Trunk Connector
 
-- VSYS    distributed over A48-50; filtered with FB4 (ferrite bead 220R@100MHz)
-C53 (10u) and C106 (100n).
-- VSB3P3  distributed over A47.
-- V3P3    distributed over A6.
-- GND     distributed over A32,A45,B5,B7,B16,B18,B20,B25-26,B38,B41,B44,B47,B50.
-   - GND is multipurpose:
-      - shared as return path for VSYS,VSB3P3,V3P3 and all digital signals.
-      - shield/return path for high speed controlled impedance signals (USB).
-      - shield/return path for high speed clocks (SPI and SDIO clocks).
+  - VSYS    distributed over A48-50; filtered with FB4 (ferrite bead 220R@100MHz)
+  C53 (10u) and C106 (100n).
+  - VSB3P3  distributed over A47.
+  - V3P3    distributed over A6.
+  - GND     distributed over A32,A45,B5,B7,B16,B18,B20,B25-26,B38,B41,B44,B47,B50.
+
+GND is multipurpose:
+  - shared as return path for VSYS,VSB3P3,V3P3 and all digital signals.
+  - shield/return path for high speed controlled impedance signals (USB).
+  - shield/return path for high speed clocks (SPI and SDIO clocks).
 
 ### 3.3. Microprocessor:
 
@@ -315,6 +317,7 @@ capable of running at 200 MHz.
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uP_rst_jtag_clk_uart0.PNG)
 
 - **XTEST-CPU** harness is connected to the expansion connector.
+
 - **CPU-RST** harness is connected to uC.
 
 - EMU0,1, JTAG and UART0 signals are wired only to the extension connector
@@ -686,8 +689,8 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
 
   - if A0,1,2 address bits are exposed and connected respectively to
     KNOT.0,1,2 then 8 modules with identical I2C devices (one each) can be
-  used; this is the particular case of the card id EEPROM; other I2C with
-  same access to A2,A1,A0 address bits lead to same maximized usability.
+    used; this is the particular case of the card id EEPROM; other I2C with
+    same access to A2,A1,A0 address bits lead to same maximized usability.
 
   - if only A0,1 address bits are exposed and connected respectivelly to
     KNOT.0,1 then 4 branches with identical I2C devices (one each) can be used;
@@ -882,7 +885,7 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 - uC use crystal Y4 to generate 32.768kHz internal clock.
 - uC reset is embedded; there are no external features.
 
-#### 3.4.2. Root ID Eeprom
+#### 3.4.2. Root ID EEPROM
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_card_id_EEPROM.PNG)
 
 - the root id EEPROM is MC24C32, which implements two memories at two distinct
@@ -932,8 +935,8 @@ FAN5355UC03X (VCORE): 0x94
 
 - the TPM solution can be implemented with one of the following devices:
   - [AT97SC3205T](http://www.microchip.com/wwwproducts/en/AT97sc3205t) (by Microchip/Atmel) - installed by default.
-  - [ST19NP18](http://www.st.com/content/ccc/resource/technical/document/data_brief/7e/15/02/2a/e9/bd/4b/eb/DM00039181.pdf/files/DM00039181.pdf/jcr:content/translations/en.DM00039181.pdf)    (by STMicro)
-  - [SLB9645](http://www.infineon.com/dgdl/Infineon-TPM+SLB+9645-DS-v02_14-EN.pdf?fileId=5546d4625185e0e201518b83d0c63d7c)     (by Infineon)
+  - [ST19NP18](http://www.st.com/content/ccc/resource/technical/document/data_brief/7e/15/02/2a/e9/bd/4b/eb/DM00039181.pdf/files/DM00039181.pdf/jcr:content/translations/en.DM00039181.pdf) (by STMicro)
+  - [SLB9645](http://www.infineon.com/dgdl/Infineon-TPM+SLB+9645-DS-v02_14-EN.pdf?fileId=5546d4625185e0e201518b83d0c63d7c) (by Infineon)
 
 The schematic details the resistor stuffing for the above three options.
 
@@ -950,6 +953,7 @@ The schematic details the resistor stuffing for the above three options.
   - ATECC508A (default installation)
 
 #### 3.4.7. TRIGIO
+
 - this is a trigger line that can be used by the gateway for real time
 applications where a synchronization is desired among some or all of the
 modules.
@@ -966,9 +970,9 @@ it as well to uP in next hw release.
   authentication; after passing the test, the host is switched to
   the uP USB (USB0 of AM3356).
 
-- harness **USB0** is wired to uP
-- harness **USB-MCU** is wired to uC
-- harness **USB-SW-CTRL** is wired to uC
+- harness **USB0** is wired to uP.
+- harness **USB-MCU** is wired to uC.
+- harness **USB-SW-CTRL** is wired to uC.
 - harness **USB-CONN** is wired to USB-OTG connector.
 
 ***
@@ -982,35 +986,46 @@ it as well to uP in next hw release.
 ![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/Test_extension_card_connector.PNG)
 
 ### 3.8. Schematic
+
 [The schematic](https://github.com/agathis-project/salix-arctica/blob/master/v1/SCH-1-1-1.pdf)
 for this design was captured in Altium and is available as pdf and project
 file package in v1 folder of this repo.
 
 ### 3.9. Layout
+
 The layout for this design was done in Altium.
 See [v1](https://github.com/agathis-project/salix-arctica/blob/master/v1) folder.
 
 ### 3.10. Mechanicals
+
 - tbd
 
 ### 3.11. Prototype
+
 - tbd
 
 ### 3.12. Validation
+
 - tbd
 
 ### 3.13. Integration
+
 #### 3.13.1. EMC Compliance Test Plan
+
 #### 3.13.2. Safety Test Plan
+
 #### 3.13.3. Hazardous Materials Control Plan
 
 ## 4. References
--tbd
+
+- tbd
 
 ## 5. License
+
 This design is licensed under the terms of the TAPR.
 The terms of the license are available in the LICENSE.TXT file included in the
 repository.
 
 ## 6. Attachments
-- see [AP-1](https://github.com/agathis-project/salix-arctica/blob/master/AP-1) folder
+
+See [AP-1](https://github.com/agathis-project/salix-arctica/blob/master/AP-1) folder
