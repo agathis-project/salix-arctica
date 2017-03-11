@@ -641,7 +641,7 @@ SPIB.SCLK  MCASP0_ACLKX  spi0_sclk   A13
   in each branch id EEPROM.
 
 ##### 3.3.4.5. I2C-TRUNK
-![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_I2C.PNG)
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_i2c.PNG)
 
 - I2C-TRUNK root circuit is compliant with Agathis Trunk Standard.
 
@@ -880,7 +880,7 @@ NAND_Tree#  = 1 (disable NAND Tree diagnostic)
 - uC reset is embedded; there are no external features.
 
 #### 3.4.2. Root ID EEPROM
-![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_card_id_EEPROM.PNG)
+![alt text](https://github.com/agathis-project/salix-arctica/blob/master/AP-1/uC_card_id_eeprom.PNG)
 
 - the root id EEPROM is MC24C32, which implements two memories at two distinct
   I2C addresses:
