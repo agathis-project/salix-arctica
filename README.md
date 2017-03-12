@@ -65,7 +65,7 @@ things over media interfaces located on branches.
 
 - strong preference for devices with full datasheet and free online support.
 
-- root target size excluding connectors: 85 square mm.
+- root target size excluding connectors: a square with side of 85mm.
 
 - trunk connector using controlled impedance technology to support speeds
   higher than 5Gbps per differential line.
@@ -204,9 +204,9 @@ things over media interfaces located on branches.
 
 - **CORE-MON** is a remote sense signal from the uP die to the VCORE regulator.
 
-- use testpoints T60 and T58 to measure VCORE load current.
+- use testpoints t60 and t58 to measure VCORE load current.
 
-- use testpoints T64 and T67 to measure V1P8 load current.
+- use testpoints t64 and t67 to measure V1P8 load current.
 
 ***
 
@@ -232,7 +232,7 @@ things over media interfaces located on branches.
 
 - **VMON** signal wired to uC A/D converter monitors the V3P3 voltage.
 
-- use test points T69 and T65 to measure V3P3 load current.
+- use test points t69 and t65 to measure V3P3 load current.
 
 ***
 
@@ -255,7 +255,7 @@ things over media interfaces located on branches.
 
 - **VMON** signal wired to uC A/D converter monitors the VUSB voltage.
 
-- use test points T69 and T65 to measure VUSB load current.
+- use test points t69 and t65 to measure VUSB load current.
 
 #### 3.2.6. Switching frequency lock for VCORE, V1P8, V3P3 and VUSB regulators:
 
